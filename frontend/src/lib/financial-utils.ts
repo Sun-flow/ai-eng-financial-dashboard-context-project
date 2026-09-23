@@ -78,3 +78,25 @@ export function formatCurrency(value: number): string {
 export function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
 }
+
+export function computePeriodLabel(movements: FinancialMovement[]): string | null {
+  if (movements.length === 0) {
+    return null;
+  }
+
+  const dates = movements
+    .map((movement) => new Date(movement.create_date))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  const firstYear = first.getFullYear();
+  const lastYear = last.getFullYear();
+  const isFullYear = lastYear === firstYear && last.getMonth() === 11 && first.getMonth() === 0;
+
+  if (isFullYear) {
+    return `${firstYear} — Full Year`;
+  }
+
+  return `${first.toLocaleDateString("en-US", { month: "short", year: "numeric" })} — ${last.toLocaleDateString("en-US", { month: "short", year: "numeric" })}`;
+}

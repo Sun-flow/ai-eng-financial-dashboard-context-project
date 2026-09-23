@@ -2,11 +2,7 @@ from datetime import date
 
 from fastapi.testclient import TestClient
 
-from app.main import app
 from app.routes import filter_movements_by_date, generate_mock_movements
-
-
-client = TestClient(app)
 
 
 def test_generate_mock_movements_returns_full_year_sorted_data():
@@ -26,14 +22,14 @@ def test_filter_movements_by_date_includes_range_edges():
     assert all(movement.create_date == target_date for movement in filtered)
 
 
-def test_health_endpoint_returns_ok():
+def test_health_endpoint_returns_ok(client: TestClient):
     response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
-def test_metrics_endpoint_respects_date_filters():
+def test_metrics_endpoint_respects_date_filters(client: TestClient):
     base_response = client.get("/api/metrics")
     assert base_response.status_code == 200
     first_date = base_response.json()[0]["create_date"]
@@ -49,7 +45,7 @@ def test_metrics_endpoint_respects_date_filters():
     assert all(item["create_date"] == first_date for item in payload)
 
 
-def test_b2b_endpoint_only_returns_b2b_records():
+def test_b2b_endpoint_only_returns_b2b_records(client: TestClient):
     response = client.get("/api/metrics/b2b")
 
     assert response.status_code == 200
@@ -59,7 +55,7 @@ def test_b2b_endpoint_only_returns_b2b_records():
     assert payload == sorted(payload, key=lambda item: item["create_date"])
 
 
-def test_b2c_endpoint_only_returns_b2c_records():
+def test_b2c_endpoint_only_returns_b2c_records(client: TestClient):
     response = client.get("/api/metrics/b2c")
 
     assert response.status_code == 200
@@ -69,7 +65,7 @@ def test_b2c_endpoint_only_returns_b2c_records():
     assert payload == sorted(payload, key=lambda item: item["create_date"])
 
 
-def test_metrics_endpoint_filters_by_category():
+def test_metrics_endpoint_filters_by_category(client: TestClient):
     response = client.get("/api/metrics", params={"category": "sales"})
 
     assert response.status_code == 200
@@ -78,7 +74,7 @@ def test_metrics_endpoint_filters_by_category():
     assert all(item["category"] == "sales" for item in payload)
 
 
-def test_metrics_endpoint_filters_by_operation_type():
+def test_metrics_endpoint_filters_by_operation_type(client: TestClient):
     response = client.get("/api/metrics", params={"operation_type": "income"})
 
     assert response.status_code == 200
@@ -87,7 +83,7 @@ def test_metrics_endpoint_filters_by_operation_type():
     assert all(item["operation_type"] == "income" for item in payload)
 
 
-def test_b2b_endpoint_combines_new_filters():
+def test_b2b_endpoint_combines_new_filters(client: TestClient):
     response = client.get(
         "/api/metrics/b2b",
         params={"operation_type": "outcome", "category": "suppliers"},
@@ -101,7 +97,7 @@ def test_b2b_endpoint_combines_new_filters():
     assert all(item["category"] == "suppliers" for item in payload)
 
 
-def test_metrics_facets_returns_filter_options_and_date_range():
+def test_metrics_facets_returns_filter_options_and_date_range(client: TestClient):
     response = client.get("/api/metrics/facets")
 
     assert response.status_code == 200
@@ -118,7 +114,7 @@ def test_metrics_facets_returns_filter_options_and_date_range():
     assert payload["min_date"] <= payload["max_date"]
 
 
-def test_metrics_summary_by_month_returns_balances():
+def test_metrics_summary_by_month_returns_balances(client: TestClient):
     response = client.get("/api/metrics/summary", params={"group_by": "month"})
 
     assert response.status_code == 200
@@ -130,7 +126,7 @@ def test_metrics_summary_by_month_returns_balances():
     assert all(item["outcome"] >= 0 for item in payload)
 
 
-def test_metrics_summary_by_week_honors_business_type_filter():
+def test_metrics_summary_by_week_honors_business_type_filter(client: TestClient):
     response = client.get(
         "/api/metrics/summary",
         params={"group_by": "week", "business_type": "B2C"},
@@ -141,7 +137,7 @@ def test_metrics_summary_by_week_honors_business_type_filter():
     assert payload
 
 
-def test_top_categories_returns_limited_sorted_categories():
+def test_top_categories_returns_limited_sorted_categories(client: TestClient):
     response = client.get(
         "/api/metrics/categories/top",
         params={"operation_type": "outcome", "limit": 3},
@@ -154,7 +150,7 @@ def test_top_categories_returns_limited_sorted_categories():
     assert all(item["operation_type"] == "outcome" for item in payload)
 
 
-def test_metrics_comparison_returns_delta_fields():
+def test_metrics_comparison_returns_delta_fields(client: TestClient):
     response = client.get(
         "/api/metrics/comparison",
         params={"start_date": "2025-03-01", "end_date": "2025-03-31"},
@@ -170,7 +166,7 @@ def test_metrics_comparison_returns_delta_fields():
     }
 
 
-def test_metrics_alerts_returns_anomaly_candidates():
+def test_metrics_alerts_returns_anomaly_candidates(client: TestClient):
     response = client.get(
         "/api/metrics/alerts",
         params={"threshold": 0.2, "group_by": "month"},

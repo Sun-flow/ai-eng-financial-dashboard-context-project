@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   computeKPIs,
   computeMonthlyData,
+  computePeriodLabel,
   formatCurrency,
   formatPercent,
 } from "./financial-utils";
@@ -110,5 +111,74 @@ describe("formatters", () => {
 
   it("formats percent with one decimal", () => {
     expect(formatPercent(15.555)).toBe("15.6%");
+  });
+});
+
+describe("computePeriodLabel", () => {
+  it("returns null for empty data", () => {
+    expect(computePeriodLabel([])).toBeNull();
+  });
+
+  it("returns 'Full Year' label when data spans Jan–Dec of one year", () => {
+    const movements: FinancialMovement[] = [
+      {
+        create_date: "2025-01-05",
+        amount: 100,
+        operation_type: "income",
+        category: "sales",
+        business_type: "B2B",
+      },
+      {
+        create_date: "2025-12-20",
+        amount: 50,
+        operation_type: "outcome",
+        category: "operational",
+        business_type: "B2B",
+      },
+    ];
+
+    expect(computePeriodLabel(movements)).toBe("2025 — Full Year");
+  });
+
+  it("returns month range when data spans multiple years", () => {
+    const movements: FinancialMovement[] = [
+      {
+        create_date: "2025-09-10",
+        amount: 100,
+        operation_type: "income",
+        category: "sales",
+        business_type: "B2C",
+      },
+      {
+        create_date: "2026-08-15",
+        amount: 50,
+        operation_type: "outcome",
+        category: "suppliers",
+        business_type: "B2C",
+      },
+    ];
+
+    expect(computePeriodLabel(movements)).toBe("Sep 2025 — Aug 2026");
+  });
+
+  it("returns month range for a partial single year", () => {
+    const movements: FinancialMovement[] = [
+      {
+        create_date: "2026-03-01",
+        amount: 100,
+        operation_type: "income",
+        category: "sales",
+        business_type: "B2B",
+      },
+      {
+        create_date: "2026-06-30",
+        amount: 50,
+        operation_type: "outcome",
+        category: "others",
+        business_type: "B2B",
+      },
+    ];
+
+    expect(computePeriodLabel(movements)).toBe("Mar 2026 — Jun 2026");
   });
 });

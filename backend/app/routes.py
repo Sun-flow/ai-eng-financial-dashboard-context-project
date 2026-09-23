@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 from collections import defaultdict
 from datetime import date, timedelta
+from functools import lru_cache
 from typing import Literal
 
 from fastapi import APIRouter, Query
@@ -62,10 +63,11 @@ class MetricsAlert(BaseModel):
     increase_ratio: float
 
 
-def _year_for_month(month: int, today: date) -> int:
-    if month < today.month:
-        return today.year
-    return today.year - 1
+def _year_for_month(month: int, today: date | None = None) -> int:
+    ref = today if today is not None else date.today()
+    if month < ref.month:
+        return ref.year
+    return ref.year - 1
 
 
 def _build_movement(month: int, income_probability: float, today: date) -> FinancialMovement:
@@ -91,15 +93,16 @@ def _build_movement(month: int, income_probability: float, today: date) -> Finan
     )
 
 
-def generate_mock_movements(seed: int | None = None) -> list[FinancialMovement]:
+@lru_cache(maxsize=1)
+def generate_mock_movements(seed: int | None = None, today: date | None = None) -> list[FinancialMovement]:
     if seed is not None:
         random.seed(seed)
-    today = date.today()
+    ref_today = today if today is not None else date.today()
     movements: list[FinancialMovement] = []
     for month in range(1, 13):
         income_probability = random.uniform(0.45, 0.7)
         for _ in range(30):
-            movements.append(_build_movement(month, income_probability, today))
+            movements.append(_build_movement(month, income_probability, ref_today))
     movements.sort(key=lambda item: item.create_date)
     return movements
 
