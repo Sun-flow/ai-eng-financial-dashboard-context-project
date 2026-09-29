@@ -1,93 +1,65 @@
 # Agent Rule Compliance Assessment
 
-> **Date**: September 23, 2026  
-> **Source**: `.agents/rules/` — 22 axiom-like development rules  
-> **Method**: Manual audit against live codebase state at commit `6b9e417`
+> **Updated**: September 29, 2026
+> **Scope**: 22 rules in `.agents/rules/`
+> **Baseline**: implementation commit `6a839a8` plus current CI and dependency updates
 
-
-## Compliance Summary
+## Summary
 
 | Status | Count | Rules |
-|--------|-------|-------|
-| ✅ Compliant | 9 | R4, R5, R6, R7, R8, R9, R10, R16, R21 |
-| ❌ Needs Fix | 13 | R1, R2, R3, R11, R12, R13, R14, R15, R17, R18, R19, R20, R22 |
-| **Total** | **22** | |
+|---|---:|---|
+| Compliant in source | 17 | R1-R7, R9-R12, R14-R15, R18, R20-R22 |
+| Partial or open coverage | 5 | R8, R13, R16, R17, R19 |
+| CI-enforced directly or indirectly | 8 | R1, R3, R14, R15, R16, R17, R19, R22 |
+| Documentation-only assessment gaps | 0 | Assessment reflects the live repo |
 
+Original assessment: commit `6b9e417`, pre-implementation. Its "13 needs fix" result is obsolete; five gaps remain.
 
-## ✅ Compliant Rules (No Violations Found)
+## Rule-by-Rule Evidence
 
-### R4 — Container/Presentational Separation
+| Rule | Status | Current application |
+|---|---|---|
+| R1 Exhaustive dependencies | Compliant | Runtime and development requirements are explicit; unused `user-event` was removed; frontend lockfile is committed. |
+| R2 Parameterized configuration | Compliant | `VITE_API_PROXY_TARGET` and `CORS_ORIGINS` are environment-driven with local defaults. |
+| R3 State path handling | Compliant | Loading, error, empty, success, and render-error paths are handled; `ErrorBoundary` wraps the dashboard. |
+| R4 Container/presentational separation | Compliant | `useFinancialData` owns fetching and state; dashboard components receive props. |
+| R5 Naming conventions | Compliant | Kebab-case files, PascalCase components/types, camelCase TypeScript symbols, snake_case Python. |
+| R6 Import path convention | Compliant | `@/` is used across directories; relative imports are limited to siblings. |
+| R7 Pure transformations | Compliant | KPI, monthly aggregation, formatting, and period-label derivation live in `financial-utils.ts`. |
+| R8 Chart color semantics | Partial | Reference lines dashed; `--chart-income` blue and `--chart-outcome` orange, not required green/red. |
+| R9 Python snake_case | Compliant | Python identifiers and API parameters use snake_case. |
+| R10 APIRouter pattern | Compliant | Routes register on `APIRouter` and are included by the FastAPI app. |
+| R11 Seeded/cached mock data | Compliant | Mock generation is seeded, `@lru_cache`-backed, and accepts an explicit date. |
+| R12 Docker healthchecks | Compliant | Backend healthcheck and `service_healthy` dependency are configured. |
+| R13 Dev/prod image separation | Partial | Production omits debugger/reload; development also omits reload to avoid the bind-mount loop. Intentional deviation. |
+| R14 Pinned Python dependencies | Compliant | Direct pins plus `backend/requirements.lock`; CI installs the lockfile. |
+| R15 Backend TestClient usage | Compliant | Shared `TestClient` fixture lives in `backend/tests/conftest.py`. |
+| R16 Frontend utility tests | Partial | `financial-utils.ts` is tested, but `frontend/src/lib/utils.ts` exports `cn` without a neighboring Vitest test. |
+| R17 Component render tests | Partial | Header, KPI card, charts, and boundary tested; `KPIRow`, `Card`, `Skeleton` untested. |
+| R18 Single natural language | Compliant | User-facing frontend strings are English. |
+| R19 No dead code | Partial | `mock-data.ts` and `user-event` removed; `frontend/src/assets/hero.png` has no source import and needs an intentional-use decision. |
+| R20 No hardcoded derivatives | Compliant | HTML title and dashboard period are meaningful or derived from data. |
+| R21 Consistent API parameter names | Compliant | Route decorators and function signatures use matching date parameter names. |
+| R22 Minimal build contexts | Compliant | Backend and frontend `.dockerignore` files exclude build and development artifacts. |
 
-### R5 — Naming Conventions
+## Enforcement Status
 
-### R6 — Import Path Convention
+The CI workflow in `.github/workflows/ci.yml` now:
 
-### R7 — Pure Transformation Functions
+- installs Python dependencies from `backend/requirements.lock`;
+- runs backend tests on Python 3.13;
+- runs frontend ESLint, Vitest, and the production build;
+- uses committed lockfiles for pip and npm caching.
 
-### R8 — Chart Color Semantics
+CI enforces dependency integrity, tests, lint, and builds. Naming, import aliases, chart colors, and pure transformations remain review-audited.
 
-### R9 — snake_case in Python
+## Known Non-Rule Blocker
 
-### R10 — APIRouter Pattern
+Docker networking is paused; details: `docs/CHANGELOG.md`, `docs/operational-blockers.md`. Containers are individually healthy; host/DinD bridge blocks routing. Environmental, not a rule failure.
 
-### R16 — Frontend Utility Tests
+## Validation
 
-### R21 — Consistent API Parameter Names
-
-
-## ❌ Needs Fix — Rules with Violations
-
-### R1 — Exhaustive Dependencies
-  1. `pydantic` is imported in `backend/app/routes.py` (`from pydantic import BaseModel`) but is not listed in `backend/requirements.txt` — it resolves only transitively via `fastapi`.
-  2. `pytest-cov` is listed in `backend/requirements.txt` but is neither imported nor configured anywhere.
-
-### R2 — Parameterized Configuration
-  1. `frontend/vite.config.ts` hardcodes the proxy target to `http://backend:8000`, which only resolves inside Docker Compose.
-  2. `backend/app/main.py` hardcodes CORS to `allow_origins=["*"]` with no environment awareness.
-
-### R3 — State Path Handling
-  1. No React error boundary exists anywhere in `frontend/src/`. Unhandled render errors crash the entire app.
-
-### R11 — Seeded and Cached Mock Data
-  1. `generate_mock_movements(seed=42)` is called fresh on every request handler — no caching or memoization.
-  2. `_year_for_month()` uses `date.today()`, making output date-dependent despite the fixed seed.
-
-### R12 — Docker Healthchecks
-  1. `docker-compose.yml` specifies `depends_on: [backend]` with no `healthcheck:` block for the backend service.
-
-### R13 — Dev/Prod Image Separation
-  1. `backend/Dockerfile` includes `debugpy` in `requirements.txt` and `--reload` in the CMD — both development concerns baked into the production image.
-
-### R14 — Pinned Python Dependencies
-  1. All 6 packages in `backend/requirements.txt` are unpinned (no `==` version constraints).
-  2. No lockfile exists.
-
-### R15 — Backend TestClient Usage
-  1. `TestClient` is instantiated at module level in `test_routes.py` (`client = TestClient(app)`) rather than via a pytest fixture, risking state leakage between tests.
-
-### R17 — Component Render Tests
-  1. No `.test.tsx` files exist anywhere under `frontend/src/components/`. Zero presentational components have render tests.
-
-### R18 — Single Natural Language
-  1. `frontend/src/App.tsx` sets an error message in Spanish: `"No se pudo cargar la información financiera. Revisa la API de backend."` while every other user-facing string is English.
-
-### R19 — No Dead Code
-  1. `frontend/src/lib/mock-data.ts` contains 52 hand-written `FinancialMovement` objects but is never imported by any file in the repository.
-
-### R20 — No Hardcoded Derivatives
-  1. `frontend/index.html` has `<title>frontend</title>` — a Vite scaffold default, not the application name.
-  2. `frontend/src/components/dashboard/dashboard-header.tsx` hardcodes `period="2024 - Full Year"` which does not match the actual data range.
-
-### R22 — Minimal Build Contexts
-  1. Neither `backend/` nor `frontend/` has a `.dockerignore` file — `node_modules`, `__pycache__`, and other artifacts are sent to the Docker daemon on every build.
-
-
-## Rule Enforcement Priority
-
-Based on number of violations and operational impact:
-
-| Priority | Rules | Rationale |
-|----------|-------|-----------|
-| 🔴 Immediate | R2, R11, R13, R14, R18, R20 | Blockers or user-facing issues |
-| 🟡 This Session | R1, R3, R12, R19, R22 | Quick fixes, high compliance impact |
-| 🟢 Next Iteration | R15, R17 | New patterns (testing) that take longer to establish |
+- Backend: 15 tests passed on the Python 3.13 target.
+- Frontend: 24 Vitest tests passed.
+- TypeScript build: passed.
+- ESLint: passed for changed files and is configured in CI for the full frontend.
