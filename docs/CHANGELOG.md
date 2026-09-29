@@ -34,46 +34,6 @@
 
 This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app is now fully runnable in Docker, has proper error handling, loading states, and 15+ passing tests.
 
-Total test count: **39 tests** (15 backend + 24 frontend), all passing.
-
----
-
-## Rule Implementation Round — Repository Alignment
-
-Implementation of the 22 repository rules defined in `.agents/rules/`. This round focused on closing remaining gaps in hook extraction, data-derivation purity, test infrastructure, and dependency locking.
-
-### R4 / Round 2.3 — `useFinancialData` Custom Hook
-- **New file**: `frontend/src/hooks/use-financial-data.ts`
-- Extracted `fetchFinancialData`, `loading`, `error` state from `App.tsx` into a dedicated hook with cancellation cleanup
-- `App.tsx` reduced from ~53 lines to ~20, purely consuming hook output
-
-### R20 / Round 2.4 — Dynamic Dashboard Period Label
-- Added `computePeriodLabel(movements)` pure function to `financial-utils.ts`
-  - Returns `null` for empty data
-  - Returns `"2025 — Full Year"` for Jan–Dec data
-  - Returns `"Sep 2025 — Aug 2026"` for cross-year ranges
-  - Returns `"Mar 2026 — Jun 2026"` for partial single years
-- `App.tsx` passes `periodLabel ?? undefined` to `DashboardHeader` (no hardcoded year)
-- `DashboardHeader` default changed: `'2024 — Full Year'` → `'Full Year'`
-- **9 new test cases** covering all label branches
-
-### R15 — TestClient Fixture Moved to `conftest.py`
-- Shared `client` fixture relocated from `test_routes.py` to `backend/tests/conftest.py`
-- Removed now-unused `import pytest` from `test_routes.py`
-- 15 backend tests pass with fixture from conftest
-
-### R14 — Requirements Lockfile
-- **New file**: `backend/requirements.lock`
-- Generated against project target **Python 3.13.15** via Docker, containing all 28 transitive packages pinned exactly
-
-### Test Results
-| Check | Result |
-|-------|--------|
-| Backend tests (15) | ✅ **15 passed** in `python:3.13-slim` |
-| Frontend tests (24) | ✅ **24 passed** (+9 for period label) |
-| TypeScript build | ✅ `tsc -b` exit 0 |
-| ESLint (changed files) | ✅ clean |
-
 ---
 
 ## Round 1: 🔴 Critical — Operational Blockers Fixed
