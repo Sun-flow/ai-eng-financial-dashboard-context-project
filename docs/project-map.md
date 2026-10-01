@@ -335,7 +335,7 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 5. **Frontend only uses `/api/metrics`** — 8 other API endpoints exist but have no UI consumer.
 6. **Memory-bank exists at `/memories/repo/`** — 4 files for persistent project context.
 7. **Page title is `"frontend"`** — Vite default, not customized.
-8. **No CI/CD** — No GitHub Actions or pipeline config.
+8. **CI/CD present** — `.github/workflows/ci.yml` is tracked and pushed.
 9. **Modern stack (2026)** — React 19, TypeScript 6, Vite 8, Python 3.13.
 10. **9 operational blockers** documented in `docs/operational-blockers.md`.
 | http://localhost:8000/redoc  | ReDoc API docs                  |

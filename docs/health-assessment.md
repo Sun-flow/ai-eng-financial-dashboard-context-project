@@ -91,12 +91,13 @@
 | Import | Status | Evidence |
 |--------|--------|----------|
 | `from fastapi import APIRouter, Query` | ✅ | fastapi in requirements.txt |
-| `from pydantic import BaseModel` | ⚠️ | Not in requirements.txt — comes transitively via fastapi |
-| `from typing import Optional` | 🔲 | stdlib (not actually used in code) |
+| `from pydantic import BaseModel` | ✅ | pydantic==2.13.5 in requirements.txt |
+| `from collections import defaultdict` | ✅ | stdlib |
+| `from functools import lru_cache` | ✅ | stdlib |
 | `from datetime import date, timedelta` | ✅ | stdlib |
+| `from typing import Literal` | ✅ | stdlib |
 | `import random` | ✅ | stdlib |
-| `import math` | ✅ | stdlib |
-| `from enum import Enum` | 🔲 | stdlib (not actually used in code) |
+| `from __future__ import annotations` | ✅ | stdlib (enables postponed evaluation) |
 
 ### Python Imports (main.py)
 
@@ -248,7 +249,7 @@
 | Observation | Severity | Details |
 |------------|----------|---------|
 | `.dockerignore` files exist | ✅ Fixed | Both `backend/.dockerignore` and `frontend/.dockerignore` present |
-| CI/CD workflow present locally | 🟢 Low | `.github/workflows/ci.yml` exists locally but not yet pushed to GitHub |
+| CI/CD workflow present and tracked | ✅ Fixed | `.github/workflows/ci.yml` is tracked in git and pushed to GitHub |
 | Multi-stage Docker builds | ✅ Fixed | Both Dockerfiles have `development` and `production` targets |
 | Python deps pinned | ✅ Fixed | `requirements.txt`: `fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, `pydantic==2.13.5`
 
@@ -277,7 +278,6 @@ The codebase has strong internal consistency — virtually all imports, dependen
 1. **🔴 Docker bridge networking (paused)** — inter-container routing times out in both directions; workaround is running locally
 2. **⚠️ debugpy + Python 3.13 compatibility** — not separately verified
 3. **⚠️ Missing `.agents/` directory** — referenced by AGENTS.md but doesn't exist
-4. **⚠️ `.github/workflows/ci.yml` locally present but not yet pushed to GitHub**
-5. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
-6. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
+4. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
+5. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
 7. **⚠️ `hero.png` appears unreferenced (Rule 19)**

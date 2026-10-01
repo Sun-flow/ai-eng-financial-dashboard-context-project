@@ -14,12 +14,12 @@
 Components receive data via props and are purely presentational. State management lives in the parent (`App.tsx`).
 
 ```tsx
-// ✅ Good — App.tsx owns state, passes down as props
-<KPIRow kpiData={kpiData} loading={loading} />
-<IncomeOutcomeChart data={monthlyData} />
+// ✅ Good — App.tsx (via useFinancialData hook) owns state, passes down as props
+<KPIRow metrics={metrics} loading={loading} />
+<IncomeOutcomeChart data={monthlyData} loading={loading} />
 ```
 
-**Evidence:** `App.tsx` defines all state (`loading`, `error`, `data`) and passes to children. No child component manages its own fetch or state.
+**Evidence:** `App.tsx` destructures state from `useFinancialData()` and passes to children. No child component manages its own fetch or state.
 
 ### 1.2 Backend Architecture
 
@@ -55,10 +55,10 @@ app.include_router(router)
 **Pattern: Fetch → Transform → Render**
 
 1. Fetch raw data from API (`GET /api/metrics`)
-2. Transform via pure utility functions (`computeKPIs`, `computeMonthlyData`)
+2. Transform via pure utility functions (`computeKPIs`, `computeMonthlyData`, `computePeriodLabel`) — all called inside the `useFinancialData` hook
 3. Pass transformed data to presentational components
 
-**Evidence:** `App.tsx` calls both compute functions between fetch and render.
+**Evidence:** `useFinancialData()` calls all three compute functions between fetch and return. `App.tsx` destructures `metrics`, `monthlyData`, and `periodLabel` from the hook result.
 
 ---
 
@@ -140,53 +140,60 @@ describe('computeKPIs', () => {
 {loading ? (
   <Skeleton className="h-8 w-24" />
 ) : (
-  <span>{formatCurrency(kpiData?.income ?? 0)}</span>
+  <span>{formatCurrency(metrics.totalIncome)}</span>
 )}
 ```
 
-**Evidence:** `kpi-card.tsx` renders `<Skeleton>` when `loading` prop is true.
+**Evidence:** `kpi-card.tsx` renders `<Skeleton>` when `loading` prop is true, with conditional rendering of the full card vs skeleton placeholders.
 
 ### 4.2 Error States
 
-**Pattern: Inline error banner**
+**Pattern: Inline error banner using `destructive` theme tokens**
 
 ```tsx
-{error && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+{error ? (
+  <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground">
     {error}
   </div>
-)}
+) : null}
 ```
 
-**Evidence:** `App.tsx` renders a red error banner when `error` state is non-null.
+**Evidence:** `App.tsx` renders a red-tinted error banner when `error` state is non-null, using shadcn/ui semantic color tokens rather than hardcoded Tailwind color classes.
 
 ### 4.3 Empty States
 
-**Pattern: "No data available" fallback in charts**
+**Pattern: Empty state using `muted-foreground` token**
 
 ```tsx
-{data.every(d => d.income === 0 && d.outcome === 0) ? (
-  <p className="text-gray-500">No data available</p>
+{!hasData ? (
+  <div className="flex h-[280px] items-center justify-center text-muted-foreground text-sm">
+    No data available to display
+  </div>
 ) : (
-  <Chart />
+  <ResponsiveContainer>…</ResponsiveContainer>
 )}
 ```
 
-**Evidence:** Both `income-outcome-chart.tsx` and `profit-percent-chart.tsx` check for all-zero data.
+**Evidence:** Both `income-outcome-chart.tsx` and `profit-percent-chart.tsx` check `hasData` (derived from non-empty data) before rendering, showing a centered empty-state placeholder with `text-muted-foreground` class.
 
 ### 4.4 Styling
 
-**Pattern: Tailwind CSS utility classes + shadcn/ui primitives**
+**Pattern: Tailwind CSS utility classes + shadcn/ui primitives + `cn()` utility**
 
 - No CSS modules or styled-components
 - All styling uses Tailwind classes inline
-- shadcn/ui components use `cn()` utility for class merging
+- shadcn/ui components use the `cn()` utility for class merging, with semantic theme tokens (`bg-card`, `text-card-foreground`, `text-muted-foreground`, `border-destructive/30`, etc.) rather than hardcoded color values
 
 ```tsx
-<Card className="bg-white shadow-md rounded-lg p-6">
-  <CardTitle className="text-lg font-semibold text-gray-700">
-    {title}
-  </CardTitle>
+<Card className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
+  <CardContent className="px-6">
+    <CardTitle className="leading-none font-semibold">
+      {title}
+    </CardTitle>
+    <CardDescription className="text-muted-foreground text-sm">
+      {description}
+    </CardDescription>
+  </CardContent>
 </Card>
 ```
 
@@ -198,18 +205,25 @@ describe('computeKPIs', () => {
 
 ### 5.1 shadcn/ui Usage
 
-**Pattern: Copy-paste primitives with `cn()` utility**
+**Pattern: Function components with `cn()` utility, no `forwardRef`**
 
 ```typescript
 // card.tsx
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("rounded-xl border bg-card text-card-foreground shadow", className)} {...props} />
+function Card({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+        className,
+      )}
+      {...props}
+    />
   )
-);
+}
 ```
 
-**Evidence:** `card.tsx` and `skeleton.tsx` follow the standard shadcn/ui pattern with `cn()` and `forwardRef`.
+**Evidence:** `card.tsx` and `skeleton.tsx` use plain function components (not `forwardRef`) with the `cn()` utility and `data-slot` attributes for CSS slot targeting. The project uses shadcn/ui **blocks** (the "block" / function-component style), not the legacy `forwardRef` pattern.
 
 ### 5.2 Chart Components
 
@@ -278,7 +292,7 @@ The claimed `strat_date` typo was investigated and does not exist in the current
 | Commit style | Not established (no conventional commits) |
 | PR template | Not present |
 | Code review | Not established |
-| CI/CD | CI workflow present locally (`.github/workflows/ci.yml`) but not yet pushed to GitHub |
+| CI/CD | CI workflow present and tracked (`.github/workflows/ci.yml`) |
 
 These are not fully implemented and would need to be established for collaboration.
 

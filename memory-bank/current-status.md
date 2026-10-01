@@ -45,13 +45,13 @@ The rule implementation pass is not fully closed. The current assessment identif
 ## Next Priorities
 
 1. Close the five rule coverage gaps above, beginning with chart semantics and missing tests.
-2. Review, stage, commit, and push the untracked `.github/workflows/ci.yml` and `docs/planning.md`.
+2. (Completed) `.github/workflows/ci.yml` and `docs/planning.md` are tracked and pushed.
 3. Decide whether to investigate the paused Docker bridge issue in a host environment with network and iptables access.
 4. Plan production configuration, restricted CORS, and database integration only when those features are in scope.
 
 ## Repository State
 
-`main` is pushed through `0bb9972`; CI, `docs/planning.md`, and refreshed memory-bank summaries remain untracked and under review.
+`main` is pushed through `20f43bc`; all documentation, CI workflows, and memory-bank summaries are tracked and aligned with the current codebase state.
 
 ## Useful Checks
 

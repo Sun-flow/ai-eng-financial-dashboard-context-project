@@ -67,15 +67,11 @@
 
 ## 🎯 Next Priorities (in order)
 
-### 1. Review and commit CI
-- Review `.github/workflows/ci.yml`.
-- Stage and commit it when the CI commands and lockfile usage are accepted.
-
-### 2. Keep context synchronized
+### 1. Keep context synchronized
 - Update the memory bank whenever implementation, test, or blocker state changes.
 - Keep the rule assessment aligned with `.agents/rules/` and executable validation.
 
-### 3. Deferred product and infrastructure work
+### 2. Deferred product and infrastructure work
 - Investigate Docker bridge routing only in an environment with host network and iptables access.
 - Scope production configuration, restricted CORS, and database integration separately before implementation.
 
