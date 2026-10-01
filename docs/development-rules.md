@@ -1,6 +1,6 @@
 # Development Rules — Financial Dashboard
 
-> **Last updated**: 2026-09-23  
+> **Last updated**: 2026-10-01  
 > **Purpose**: Axiom-like rules for development, each grounded in at least one concrete repo fact. Rules are ordered from most universally applicable to most specific. This document expands as new insights emerge.
 
 ---
@@ -30,9 +30,9 @@ These rules apply across the entire repository — frontend, backend, and infras
 
 ### RULE 2: Configuration that differs between environments must be parameterized, not hardcoded.
 
-- **Fact 2a:** The Vite proxy target `http://backend:8000` only resolves inside Docker Compose — running locally produces 502 errors. ([operational-blockers.md] Issue #2)
-- **Fact 2b:** `.env.example` exists for `VITE_API_BASE_URL` but the proxy target is not wired to it. ([project-map.md] Configuration Files section)
-- **Fact 2c:** CORS is hardcoded to `["*"]` in `main.py` with no environment awareness. ([health-assessment.md] Code Quality Observations — Backend)
+- **Fact 2a:** The Vite proxy target is driven by `VITE_API_PROXY_TARGET` env var (defaults to `http://localhost:8000` for local dev) — no longer hardcoded to the Docker-only `http://backend:8000`. ([vite.config.ts])
+- **Fact 2b:** `.env.example` documents `VITE_API_BASE_URL` for backend origin override; the proxy target variable is documented in `docker-compose.yml`. ([frontend/.env.example] [docker-compose.yml])
+- **Fact 2c:** CORS origins are driven by `CORS_ORIGINS` env var (comma-separated, default `"*"`). The `*` default is permissive for development but should be locked down in production. ([main.py])
 
 **Corollary 2.1:** Hardcoded values that depend on environmental context (Docker vs. local, dev vs. prod) are bugs waiting to surface.
 
@@ -40,9 +40,9 @@ These rules apply across the entire repository — frontend, backend, and infras
 
 - **Fact 3a:** `App.tsx` shows a skeleton via `<Skeleton>` when `loading` is true, a red error banner when `error` is non-null, and renders data otherwise — all three branches covered. ([conventions.md] §4.1 & §4.2)
 - **Fact 3b:** Both `income-outcome-chart.tsx` and `profit-percent-chart.tsx` check for all-zero data and render `"No data available"` as an empty-state fallback. ([conventions.md] §4.3)
-- **Fact 3c:** No error boundary exists — any unhandled render error crashes the entire app with no recovery. ([health-assessment.md] Code Quality Observations — Frontend)
+- **Fact 3c:** An `ErrorBoundary` component wraps `<Dashboard />` in `App.tsx`, catching render errors and displaying a fallback UI instead of crashing. It also has a `.test.tsx` suite with 3 tests (normal render, catch+fallback, custom fallback). ([error-boundary.tsx] [error-boundary.test.tsx])
 
-**Corollary 3.1:** An error boundary wrapping the dashboard is required to satisfy this rule universally.
+**Corollary 3.1:** New components added inside `<ErrorBoundary>` are automatically covered. No additional error boundary is required.
 
 ### RULE 4: Side effects belong at the container level; presentational components must be pure.
 
@@ -79,7 +79,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 ### RULE 8: Recharts components must use consistent color semantics: green (`#10b981`) for income, red (`#ef4444`) for outcome.
 
-- **Fact 8a:** `income-outcome-chart.tsx` applies green to the income line and red to the outcome line. ([conventions.md] §5.2)
+- **Fact 8a:** CSS variables declare `--chart-income: oklch(0.62 0.2 255)` (blue hue) and `--chart-outcome: oklch(0.68 0.18 30)` (orange hue), violating the intended green/red semantic. ([index.css])
 - **Fact 8b:** `profit-percent-chart.tsx` uses a dashed reference line to indicate the zero/profitability boundary. ([conventions.md] §5.2)
 
 ### Python / FastAPI
@@ -97,8 +97,8 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 ### RULE 11: Mock data generators must use a fixed seed for reproducibility and must be cached, not regenerated per request.
 
 - **Fact 11a:** `generate_mock_movements(seed=42)` uses a deterministic seed — output is reproducible. ([project-map.md] Backend Details)
-- **Fact 11b:** Every route handler calls `generate_mock_movements(seed=42)` fresh, rebuilding all 360 movements on every request. ([conventions.md] §6 — Anti-patterns)
-- **Fact 11c:** `_year_for_month` uses `date.today()` for year assignment, making output date-dependent despite the fixed seed. ([operational-blockers.md] Issue #3)
+- **Fact 11b:** The function is decorated with `@lru_cache(maxsize=1)`, so the 360 movements are generated once (per unique `(seed, today)` tuple) and served from cache on all subsequent requests — no per-request rebuild. ([routes.py])
+- **Fact 11c:** `_year_for_month` uses `date.today()` for year assignment when `today` is `None` (the default caller), making the initial cache-fill output date-dependent despite the fixed seed. ([operational-blockers.md] Issue #3)
 
 ---
 
@@ -106,17 +106,17 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 ### RULE 12: Docker Compose services that depend on other services must use healthchecks, not just `depends_on`.
 
-- **Fact 12a:** `docker-compose.yml` specifies `depends_on: [backend]` with no healthcheck — frontend may start before the backend is ready to accept connections. ([operational-blockers.md] Issue #4)
-- **Fact 12b:** The backend has a `/health` endpoint (`{"status": "ok"}`) but it is not referenced by any Docker healthcheck configuration. ([health-assessment.md] Docker Compose References)
+- **Fact 12a:** `docker-compose.yml` specifies `depends_on: { backend: { condition: service_healthy } }` — the frontend waits for the backend healthcheck to pass before starting. ([docker-compose.yml])
+- **Fact 12b:** The backend service defines a `healthcheck` block curling `http://localhost:8000/health` with 10s interval, 5s timeout, 3 retries, and 10s start period. ([docker-compose.yml])
 
 ### RULE 13: Production Docker images must be distinct from development images (multi-stage, no debugger, no reload).
 
-- **Fact 13a:** `backend/Dockerfile` includes `debugpy` in production and uses `--reload`, which causes an infinite restart loop when combined with bind mounts. ([operational-blockers.md] Issue #1)
-- **Fact 13b:** No production-optimized Dockerfile exists — the current configuration is entirely dev-oriented. ([health-assessment.md] Code Quality Observations — Infrastructure)
+- **Fact 13a:** `backend/Dockerfile` uses multi‑stage build with three targets: `base` (Python 3.13-slim + curl), `development` (adds `debugpy` and `requirements-dev.txt`), and `production` (no debugger, plain `uvicorn`). The `development` target intentionally omits `--reload` to avoid the bind‑mount restart loop. ([backend/Dockerfile])
+- **Fact 13b:** The production target runs `uvicorn app.main:app` without debugpy, serving HTTP on port 8000. ([backend/Dockerfile])
 
 ### RULE 14: Python dependencies must be pinned to specific versions for reproducible builds.
 
-- **Fact 14a:** `requirements.txt` lists `fastapi`, `uvicorn[standard]`, `debugpy`, `pytest`, `pytest-cov`, and `httpx` with no version constraints. ([health-assessment.md] Backend Dependencies)
+- **Fact 14a:** `requirements.txt` pins `fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, and `pydantic==2.13.5` to specific versions. ([health-assessment.md] Backend Dependencies)
 - **Fact 14b:** No lockfile (`requirements.lock`, `Pipfile.lock`, or `poetry.lock`) exists. ([health-assessment.md] Code Quality Observations — Infrastructure)
 
 ---
@@ -130,13 +130,13 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 ### RULE 16: Frontend utility functions must have Vitest unit tests with `describe`/`it` blocks.
 
-- **Fact 16a:** `financial-utils.test.ts` contains 3 test cases across 2 describe blocks (`computeKPIs`, `computeMonthlyData`). ([health-assessment.md] Frontend Tests)
-- **Fact 16b:** Frontend components have zero tests — KPI cards and charts are entirely untested. ([health-assessment.md] Test Coverage Gaps)
+- **Fact 16a:** `financial-utils.test.ts` contains 9 test cases across 4 `describe` blocks (`computeKPIs` (2), `computeMonthlyData` (1), `formatters` (2), `computePeriodLabel` (4)). ([health-assessment.md] Frontend Tests)
+- **Fact 16b:** Frontend components now have render tests: `error-boundary.test.tsx` (3), `dashboard-header.test.tsx`, `income-outcome-chart.test.tsx`, `kpi-card.test.tsx` (3), and `profit-percent-chart.test.tsx`. ([frontend test files])
 
 ### RULE 17: Every presentational component must at minimum have a render test that validates loading, data, and empty states.
 
-- **Fact 17a:** `kpi-card.tsx` conditionally renders `<Skeleton>` or `<span>` depending on the `loading` prop — this branching needs test coverage. ([conventions.md] §4.1)
-- **Fact 17b:** Both chart components branch on all-zero data vs. real data — these branches are untested. ([health-assessment.md] Test Coverage Gaps)
+- **Fact 17a:** `kpi-card.tsx` conditionally renders `<Skeleton>` or `<span>` depending on the `loading` prop — `kpi-card.test.tsx` covers all three branches (data render, loading skeleton, variant styling). ([kpi-card.test.tsx])
+- **Fact 17b:** Both chart components branch on all-zero data vs. real data — `income-outcome-chart.test.tsx` and `profit-percent-chart.test.tsx` cover these branches. ([chart test files])
 
 ---
 
@@ -146,24 +146,24 @@ These rules exist specifically because violations have been identified in the co
 
 ### RULE 18: All user-facing strings in the codebase must use the same natural language.
 
-- **Fact 18a:** `App.tsx` sets an error message in Spanish: `"No se pudo cargar la información financiera. Revisa la API de backend."` while every other string in the codebase is English. ([operational-blockers.md] Issue #9)
+- **Fact 18a:** `use-financial-data.ts` previously threw an error in Spanish; it now uses English: `"Could not load financial data. Check the backend API."` — consistent with the rest of the codebase. ([use-financial-data.ts])
 
 ### RULE 19: Dead code (files that are never imported) must be removed.
 
-- **Fact 19a:** `mock-data.ts` is present in the repository with 52 hardcoded movements but is never imported by any file. ([operational-blockers.md] Issue #8)
+- **Fact 19a:** `mock-data.ts` has been removed from the repository — no dead component files remain. The `utils.ts` helper (`cn()`) is actively imported by all shadcn/ui primitives. ([frontend/src/lib/utils.ts])
 
 ### RULE 20: Values that are derivable from data must not be hardcoded.
 
-- **Fact 20a:** `<DashboardHeader period="2024 - Full Year" />` hardcodes the year label, which does not match the actual data range (Sep 2025 – Aug 2026). ([operational-blockers.md] Issue #3)
-- **Fact 20b:** `index.html` has `<title>frontend</title>` — a Vite default that was never changed to match the application name. ([operational-blockers.md] Issue #7)
+- **Fact 20a:** `App.tsx` passes `periodLabel ?? undefined` (derived via `computePeriodLabel(movements)`) to `DashboardHeader` — no longer hardcoded. The component's default parameter `'Full Year'` serves as a fallback. ([App.tsx] [dashboard-header.tsx] [financial-utils.ts])
+- **Fact 20b:** `index.html` has `<title>Financial Dashboard</title>` — correctly set to the application name. ([index.html])
 
 ### RULE 21: API parameter names in route decorators must match function parameter names exactly.
 
-- **Fact 21a:** The `/api/metrics/comparison` route uses `strat_date` in the decorator but `start_date` as the function parameter name — a typo that creates an inconsistency. ([conventions.md] §6 — Anti-patterns)
+- **Fact 21a:** All 9 route handlers use `start_date` consistently in both decorator queries and function parameter names — no typo mismatch exists. ([routes.py] — search `start_date` vs `strat_date`)
 
 ### RULE 22: Build contexts must be minimized to exclude unnecessary files.
 
-- **Fact 22a:** Neither `backend/` nor `frontend/` has a `.dockerignore` file — `node_modules`, `__pycache__`, and other artifacts are sent to the Docker daemon on every build. ([health-assessment.md] Code Quality Observations — Infrastructure)
+- **Fact 22a:** Both `backend/.dockerignore` and `frontend/.dockerignore` exist and exclude `node_modules/`, `__pycache__/`, `*.pyc`, `.git/`, `.env`, `dist/`, `.venv/`, and other build artifacts from the Docker context. ([backend/.dockerignore] [frontend/.dockerignore])
 
 ---
 

@@ -1,13 +1,13 @@
 # Current Status and Known Gaps
 
-> **Updated**: September 29, 2026
+> **Updated**: October 1, 2026
 
 ## What Works
 
-- 9 FastAPI routes; seeded/cached mock generation with 360 movements.
-- KPI cards and two charts with loading, error, empty, success, and render-error states.
-- `useFinancialData`, derived period labels, pinned Python dependencies, separate Docker targets, and Compose health dependency.
-- Backend: **15 tests passed**. Frontend: **24 tests passed**. ESLint, TypeScript build, and Vite production build pass.
+- 9 FastAPI routes; seeded/cached mock generation with 360 movements (`@lru_cache`).
+- KPI cards and two charts with loading, error, empty, and render-error states.
+- `useFinancialData` hook, `computePeriodLabel`, pinned Python dependencies, multi-stage Docker targets, Compose health dependency, `.dockerignore` files, env-driven CORS, parameterized Vite proxy.
+- Backend: **15 tests passed**. Frontend: **24+ tests** (9 utils + component render tests). ESLint, TypeScript build, and Vite production build pass.
 - Rule detail: `memory-bank/agent-rule-compliance-assessment.md`.
 
 ## Known Gaps and Blockers
@@ -36,7 +36,7 @@
 
 The rule implementation pass is not fully closed. The current assessment identifies five remaining gaps:
 
-- R8: chart variables do not yet use the required green income/red outcome palette.
+- R8: chart variables use blue/orange oklch hues instead of green/red semantic.
 - R13: development reload is intentionally disabled because it caused the Docker bind-mount restart loop.
 - R16: `frontend/src/lib/utils.ts` has no utility test.
 - R17: `KPIRow`, `Card`, and `Skeleton` have no render tests.
@@ -45,7 +45,7 @@ The rule implementation pass is not fully closed. The current assessment identif
 ## Next Priorities
 
 1. Close the five rule coverage gaps above, beginning with chart semantics and missing tests.
-2. Review, stage, commit, and push the untracked `.github/workflows/ci.yml`.
+2. Review, stage, commit, and push the untracked `.github/workflows/ci.yml` and `docs/planning.md`.
 3. Decide whether to investigate the paused Docker bridge issue in a host environment with network and iptables access.
 4. Plan production configuration, restricted CORS, and database integration only when those features are in scope.
 

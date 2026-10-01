@@ -1,6 +1,6 @@
 # Development Conventions — Financial Dashboard
 
-> **Last updated**: 2026-09-23  
+> **Last updated**: 2026-10-01  
 > **Purpose**: Catalog established patterns, conventions, and anti-patterns found in the codebase.
 
 ---
@@ -23,24 +23,32 @@ Components receive data via props and are purely presentational. State managemen
 
 ### 1.2 Backend Architecture
 
-**Pattern: Router + app factory**
+**Pattern: Module-level app + APIRouter**
 
-The FastAPI app is created via a factory function (`create_app()` in `main.py`) and routes are registered via an `APIRouter` in `routes.py`.
+The FastAPI app is created at **module level** in `main.py`. Routes are registered on a separate `APIRouter` in `routes.py`, which is included at module scope. CORS origins are driven by the `CORS_ORIGINS` environment variable (comma-separated, default `"*"`).
 
 ```python
 # main.py
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.include_router(routes.router)
-    yield
+import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.routes import router
 
-def create_app() -> FastAPI:
-    app = FastAPI(lifespan=lifespan)
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], ...)
-    return app
+origins_str = os.getenv("CORS_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in origins_str.split(",")]
+
+app = FastAPI(title="Financial Metrics API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(router)
 ```
 
-**Evidence:** `main.py` uses `create_app()` factory; `routes.py` uses `APIRouter()`.
+**Evidence:** `main.py` uses module-level `app = FastAPI()`, env-driven CORS, and `app.include_router(router)`. There is no factory function or lifespan handler.
 
 ### 1.3 Data Flow Pattern
 
@@ -61,7 +69,7 @@ def create_app() -> FastAPI:
 | Convention | Examples | Evidence |
 |------------|----------|----------|
 | kebab-case for component files | `kpi-card.tsx`, `kpi-row.tsx`, `dashboard-header.tsx` | ✅ |
-| kebab-case for lib files | `financial-types.ts`, `financial-utils.ts`, `mock-data.ts` | ✅ |
+| kebab-case for lib files | `financial-types.ts`, `financial-utils.ts`, `utils.ts` | ✅ |
 | PascalCase for component exports | `KPICard`, `KPIRow`, `DashboardHeader` | ✅ |
 | PascalCase for interfaces/types | `FinancialMovement`, `KPIMetrics`, `MonthlyData` | ✅ |
 | camelCase for functions/variables | `computeKPIs`, `formatCurrency`, `fetchFinancialData` | ✅ |
@@ -87,21 +95,24 @@ def create_app() -> FastAPI:
 
 ### 3.1 Backend Tests
 
-**Pattern: pytest + httpx TestClient + fixtures**
+**Pattern: pytest + TestClient + synchronous fixtures**
 
 ```python
+from fastapi.testclient import TestClient
+from app.main import app
+
 @pytest.fixture
-def client():
-    app = create_app()
+def client() -> TestClient:
+    """Isolated TestClient instance per test to prevent state leakage."""
     return TestClient(app)
 
-@pytest.mark.anyio
-async def test_health_endpoint_returns_ok(client):
-    response = await client.get("/health")
+def test_health_endpoint_returns_ok(client: TestClient):
+    response = client.get("/health")
     assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
 ```
 
-**Evidence:** `conftest.py` defines `client()` fixture; `test_routes.py` uses `@pytest.mark.anyio` and `async/await`.
+**Evidence:** `conftest.py` imports the module-level `app` directly and returns a synchronous `TestClient`. All test functions are plain `def` (no async, no `@pytest.mark.anyio`). The fixture is function-scoped for isolation.
 
 ### 3.2 Frontend Tests
 
@@ -205,66 +216,57 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
 **Pattern: Recharts with consistent styling**
 
 - Use `LineChart` as primary chart type
-- Custom colors: green (`#10b981`) for income, red (`#ef4444`) for outcome
+- Colors defined via CSS variables: `--chart-income` (blue), `--chart-outcome` (orange), `--chart-profit` (green) — see `index.css`
 - Tooltips and legends enabled
 - Responsive containers
 
-**Evidence:** `income-outcome-chart.tsx` uses green/red lines; `profit-percent-chart.tsx` adds a dashed reference line.
+**Evidence:** `income-outcome-chart.tsx` uses `var(--chart-income)`/`var(--chart-outcome)` for its two series; `profit-percent-chart.tsx` uses `var(--chart-profit)` for the profit line and a dashed `ReferenceLine` at y=0.
 
 ---
 
-## 6. Anti-Patterns Identified
+## 6. Anti-Patterns Identified (Resolved)
 
-### ❌ Hardcoded Values
+> The following anti-patterns were found during the initial audit and have since been fixed. They are kept here as historical reference and to prevent regression.
 
-```tsx
-// Anti-pattern in dashboard-header.tsx
-<DashboardHeader period="2024 - Full Year" />
+### ✅ Hardcoded Values (Fixed)
+
 ```
-The period label is hardcoded instead of being derived from actual data.
-
-### ❌ Logic in Components (No Abstraction)
-
-```tsx
-// Anti-pattern in App.tsx — fetch lives inline, not in a hook or service
-const fetchFinancialData = useCallback(async () => {
-  setLoading(true);
-  try {
-    const response = await fetch('/api/metrics');
-    // ...
-  }
-}, []);
+// Was: <DashboardHeader period="2024 - Full Year" />
+// Now: <DashboardHeader period={periodLabel ?? undefined} />
 ```
-Should be extracted to a custom hook (`useFinancialData`).
+The period label was hardcoded; `App.tsx` now passes a dynamically derived label from `computePeriodLabel(movements)` in `financial-utils.ts`.
 
-### ❌ Mixed Language Error Messages
+### ✅ Logic in Components / No Hook (Fixed)
 
-```tsx
-// Anti-pattern in App.tsx
-setError("No se pudo cargar la información financiera. Revisa la API de backend.");
 ```
-Error message is in Spanish while the rest of the codebase is in English.
+// Was: inline useCallback in App.tsx
+// Now: encapsulated in use-financial-data.ts custom hook
+```
+Data fetching was extracted into `useFinancialData()` in `hooks/use-financial-data.ts`.
 
-### ❌ Dead Code
+### ✅ Mixed Language Error Messages (Fixed)
 
-`mock-data.ts` is never imported by any component — it exists but is unused.
+```
+// Was: "No se pudo cargar la información financiera. Revisa la API de backend."
+// Now: "Could not load financial data. Check the backend API."
+```
+The Spanish error message was replaced with English, consistent with the rest of the codebase.
 
-### ❌ Mock Data Generated Per Request (Backend)
+### ✅ Dead Code — mock-data.ts (Removed)
+
+The unused `mock-data.ts` file (52 hardcoded movements, never imported) has been deleted.
+
+### ✅ Mock Data Regenerated Per Request (Fixed)
 
 ```python
-# Anti-pattern in routes.py — called in every handler
-movements = generate_mock_movements(seed=42)
+# Was: called fresh in every handler
+# Now: @lru_cache(maxsize=1) caches the result per (seed, today) tuple
 ```
-Should be cached/initialized once at startup.
+`generate_mock_movements` was decorated with `@lru_cache(maxsize=1)`, so the 360 movements are generated once and served from cache on all subsequent requests.
 
-### ❌ Typo in Query Parameter Name
+### ✅ Typo in Query Parameter Name (Not Found)
 
-```python
-# Anti-pattern in routes.py
-async def comparison(start_date: date, end_date: date, ...):
-    ...
-```
-Named `strat_date` in the route decorator but the parameter name is `start_date` elsewhere.
+The claimed `strat_date` typo was investigated and does not exist in the current codebase — all 9 route handlers consistently use `start_date` in both the decorator query and function parameter name.
 
 ---
 
@@ -276,9 +278,9 @@ Named `strat_date` in the route decorator but the parameter name is `start_date`
 | Commit style | Not established (no conventional commits) |
 | PR template | Not present |
 | Code review | Not established |
-| CI/CD | Not configured |
+| CI/CD | CI workflow present locally (`.github/workflows/ci.yml`) but not yet pushed to GitHub |
 
-These are not implemented and would need to be established for collaboration.
+These are not fully implemented and would need to be established for collaboration.
 
 ---
 
@@ -289,14 +291,26 @@ These are not implemented and would need to be established for collaboration.
 - ✅ Consistent naming conventions
 - ✅ Tailwind-first styling approach
 - ✅ shadcn/ui primitives with proper patterns
-- ✅ Backend router + app factory pattern
+- ✅ Backend router + module-level app pattern
 - ✅ Loading/error/empty state handling
+- ✅ Dynamic period label derived from data
+- ✅ Error boundary wrapping the dashboard
+- ✅ Data fetching extracted into custom hook
+- ✅ English-only user-facing strings
 - ✅ Pytest + Vitest for testing
+- ✅ Render tests for components
+- ✅ Multi-stage Docker builds (dev/prod separation)
+- ✅ Healthcheck in Docker Compose
+- ✅ .dockerignore files for both services
+- ✅ CORS driven by environment variable
+- ✅ Vite proxy target parameterized via env var
+- ✅ Mock data cached via lru_cache
+- ✅ Pinned Python dependency versions
 
 ### Areas for Improvement
-- ⚠️ Extract data fetching into custom hooks
-- ⚠️ Make period label dynamic
-- ⚠️ Remove dead code (`mock-data.ts`)
-- ⚠️ Standardize language (Spanish → English)
-- ⚠️ Cache mock data at startup instead of per-request
-- ⚠️ Fix `strat_date` typo
+- ⚠️ Chart colors use blue/orange (oklch) instead of green/red semantic — violates Rule 8
+- ⚠️ `utils.ts` has no dedicated utility test — violates Rule 16
+- ⚠️ `KPIRow`, `Card`, and `Skeleton` have no render tests
+- ⚠️ `frontend/src/assets/hero.png` appears unreferenced — needs intentional-use decision (Rule 19)
+- ⚠️ No lockfile for Python dependencies (Rule 14)
+- ⚠️ Docker bridge networking (#10) times out in both directions (paused)

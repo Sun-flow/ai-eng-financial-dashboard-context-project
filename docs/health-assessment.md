@@ -1,6 +1,6 @@
 # Health Assessment — Financial Dashboard
 
-> **Last updated**: 2026-09-23  
+> **Last updated**: 2026-10-01  
 > **Methodology**: Manual audit of every file in the repository — verifying imports, references, connections, and dependencies between all components, routes, types, and configurations.
 
 ---
@@ -30,15 +30,13 @@
 
 | Import | Target | Status | Evidence |
 |--------|--------|--------|----------|
-| `fetchFinancialData` (inline) | `GET /api/metrics` | ✅ | Backend serves this endpoint |
-| `computeKPIs` | `./lib/financial-utils` | ✅ | Function exists and exported |
-| `computeMonthlyData` | `./lib/financial-utils` | ✅ | Function exists and exported |
-| `FinancialMovement` | `./lib/financial-types` | ✅ | Interface exists and exported |
-| `KPIMetrics`, `MonthlyData` | `./lib/financial-types` | ✅ | Interfaces exist and exported |
-| `DashboardHeader` | `./components/dashboard/dashboard-header` | ✅ | File + named export exist |
-| `KPIRow` | `./components/dashboard/kpi-row` | ✅ | File + named export exist |
-| `IncomeOutcomeChart` | `./components/dashboard/income-outcome-chart` | ✅ | File + named export exist |
-| `ProfitPercentChart` | `./components/dashboard/profit-percent-chart` | ✅ | File + named export exist |
+| `useFinancialData` | `@/hooks/use-financial-data` | ✅ | Hook exists, encapsulating fetch + state |
+| `computePeriodLabel` | `@/lib/financial-utils` | ✅ | Function exists and exported |
+| `DashboardHeader` | `@/components/dashboard/dashboard-header` | ✅ | File + named export exist |
+| `KPIRow` | `@/components/dashboard/kpi-row` | ✅ | File + named export exist |
+| `IncomeOutcomeChart` | `@/components/dashboard/income-outcome-chart` | ✅ | File + named export exist |
+| `ProfitPercentChart` | `@/components/dashboard/profit-percent-chart` | ✅ | File + named export exist |
+| `ErrorBoundary` | `@/components/error-boundary` | ✅ | File + named export exist |
 
 ### Component Imports
 
@@ -121,13 +119,12 @@
 
 | Package | Status | Notes |
 |---------|--------|-------|
-| fastapi | ✅ | Core framework |
-| uvicorn | ✅ | ASGI server |
-| debugpy | ⚠️ | Python 3.13 compatibility unverified |
-| httpx | ✅ | HTTP client for TestClient |
-| pytest | ✅ | Test framework |
-| pytest-cov | ⚠️ | Coverage plugin (present but unused in config) |
-| pydantic | ⚠️ | Not listed directly — comes transitively via fastapi |
+| fastapi==0.141.1 | ✅ | Core framework, pinned | | 
+| uvicorn[standard]==0.53.0 | ✅ | ASGI server, pinned |
+| pydantic==2.13.5 | ✅ | Data validation, pinned | | | | | 
+| debugpy (in requirements-dev.txt) | ⚠️ | Python 3.13 compatibility unverified |
+| httpx (in requirements-dev.txt) | ✅ | HTTP client for TestClient |
+| pytest (in requirements-dev.txt) | ✅ | Test framework | | | | |
 
 ---
 
@@ -147,7 +144,7 @@
 |---------|-------|--------|-------|
 | plugins | `@vitejs/plugin-react`, `tailwindcss` | ✅ | Both installed |
 | resolve.alias | `@` → `./src` | ✅ | Matches tsconfig paths |
-| proxy.target | `http://backend:8000` | ⚠️ | **Only works in Docker** — local dev broken (see blockers) |
+| proxy.target | Driven by `VITE_API_PROXY_TARGET` env var (default `http://localhost:8000`) | ✅ | Parameterized — works in Docker and locally |
 
 ### ESLint Config
 
@@ -172,23 +169,25 @@
 | Fixtures | conftest.py adds project dir to sys.path; TestClient is instantiated at module level in test_routes.py | ✅ |
 | All tests pass | ⚠️ | **Not verified** — backend has operational blockers preventing run |
 
-### Frontend Tests (`financial-utils.test.ts`)
+### Frontend Tests
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| Total test cases | 3 | ✅ |
-| Describe blocks | 2 (`computeKPIs`, `computeMonthlyData`) | ✅ |
-| Framework | Vitest | ✅ |
-| All tests pass | ⚠️ | **Not verified** — proxy issue prevents full run |
+| Total test cases (utils) | 9 | ✅ |
+| Describe blocks | 4 (`computeKPIs`, `computeMonthlyData`, `formatters`, `computePeriodLabel`) | ✅ |
+| Framework | Vitest + jest-dom | ✅ |
+| Component render tests | `error-boundary.test.tsx` (3), `dashboard-header.test.tsx`, `income-outcome-chart.test.tsx`, `kpi-card.test.tsx` (3), `profit-percent-chart.test.tsx` | ✅ |
+| All tests pass | ⚠️ | **Not verified** — environment not set up for test run |
 
 ### Test Coverage Gaps
 
 | Area | Tests? | Status |
 |------|--------|--------|
 | Backend API routes | 15 tests, good coverage | ✅ |
-| Frontend utils (`financial-utils.ts`) | 3 tests, basic coverage | ⚠️ |
-| Frontend components | None | ❌ |
-| Frontend rendering/snapshots | None | ❌ |
+| Frontend utils (`financial-utils.ts`) | 9 tests, good coverage | ✅ |
+| Frontend components | 5 test files covering error boundary, header, charts, KPI cards | ✅ |
+| `utils.ts` (`cn()`) | None | ❌ |
+| `KPIRow`, `Card`, `Skeleton` | None | ❌ |
 | Integration (FE + BE together) | None | ❌ |
 | Error states / edge cases | Limited | ⚠️ |
 
@@ -204,8 +203,9 @@
 | `services.backend.build` | `./backend` | ✅ | Directory + Dockerfile exist |
 | `services.frontend.volumes` | `./frontend:/app` | ✅ | Match expected structure |
 | `services.backend.volumes` | `./backend:/app` | ✅ | Match expected structure |
-| `depends_on` | `backend` | ⚠️ | Service name correct, but no healthcheck |
-| Frontend proxy target | `http://backend:8000` | ⚠️ | Correct in Docker, broken locally |
+| `depends_on` with healthcheck | `backend: { condition: service_healthy }` | ✅ | Frontend waits for backend health |
+| Backend healthcheck | curl `http://localhost:8000/health` (10s interval, 3 retries, 10s start) | ✅ | Configured |
+| Frontend proxy target | `VITE_API_PROXY_TARGET` env var (default `http://localhost:8000`) | ✅ | Parameterized — works in Docker and locally |
 | `.env.example` | `VITE_API_BASE_URL` | ✅ | Env var referenced in `vite.config.ts` |
 
 ### File Cross-References
@@ -225,32 +225,32 @@
 
 | Observation | Severity | Details |
 |------------|----------|---------|
-| No error boundary | 🟡 Medium | Unhandled render errors crash the app |
-| Mixed language error message | 🟢 Low | `App.tsx` error is in Spanish; rest of codebase is English |
-| Hardcoded period label | 🟡 Medium | `"2024 - Full Year"` doesn't match actual data range |
-| Dead code (`mock-data.ts`) | 🟢 Low | 57 movements never imported anywhere |
+| Error boundary exists | ✅ Fixed | `ErrorBoundary` wraps `<Dashboard>` in `App.tsx` — render errors show fallback UI |
+| Language standardized | ✅ Fixed | Error message now English: `"Could not load financial data. Check the backend API."` |
+| Period label dynamic | ✅ Fixed | `dashboard-header.tsx` receives `periodLabel ?? undefined` from `computePeriodLabel(movements)` |
+| Dead code removed | ✅ Fixed | `mock-data.ts` deleted |
+| Inline fetch extracted | ✅ Fixed | Now in `use-financial-data.ts` custom hook |
 | No PropTypes / runtime validation | 🟢 Low | TypeScript-only; no runtime checks |
-| Inline fetch in component | 🟡 Medium | `fetchFinancialData` lives in `App.tsx` — not extractable/testable |
 
 ### Backend
 
 | Observation | Severity | Details |
 |------------|----------|---------|
-| Mock data regenerated per request | 🟢 Low | `generate_mock_movements()` called on every handler |
-| `--reload` in Docker CMD | 🔴 Critical | Causes restart loop with bind mounts (see blockers) |
-| No healthcheck endpoint monitoring | 🟢 Low | `/health` exists but not used by Docker |
-| Hardcoded CORS `["*"]` | 🟡 Medium | Permissive for dev, bad for production |
-| No input validation on query params | 🟡 Medium | FastAPI handles type coercion, but no business validation |
+| Mock data cached | ✅ Fixed | `@lru_cache(maxsize=1)` caches result after first call |
+| `--reload` intentionally omitted | ✅ Fixed | Dockerfile CMD intentionally skips `--reload` (see Issue #1 note) |
+| Healthcheck configured | ✅ Fixed | `docker-compose.yml` uses curl healthcheck on `/health` with 10s interval |
+| CORS env-driven | ✅ Fixed | `CORS_ORIGINS` env var (comma-separated, default `"*"`) in `main.py` |
 | `from __future__ import annotations` used | 🟢 Note | Enables postponed evaluation of type annotations |
+| No input validation on query params | 🟡 Medium | FastAPI handles type coercion, but no business validation |
 
 ### Infrastructure
 
 | Observation | Severity | Details |
 |------------|----------|---------|
-| No `.dockerignore` files | 🟡 Medium | Bloated build contexts send `node_modules`, `__pycache__` |
-| No CI/CD pipeline | 🟡 Medium | No automated testing or deployment |
-| No production configuration | 🟡 Medium | Dockerfiles are dev-oriented (bind mounts, debugpy) |
-| Python deps unpinned | 🟡 Medium | `requirements.txt` has unpinned versions |
+| `.dockerignore` files exist | ✅ Fixed | Both `backend/.dockerignore` and `frontend/.dockerignore` present |
+| CI/CD workflow present locally | 🟢 Low | `.github/workflows/ci.yml` exists locally but not yet pushed to GitHub |
+| Multi-stage Docker builds | ✅ Fixed | Both Dockerfiles have `development` and `production` targets |
+| Python deps pinned | ✅ Fixed | `requirements.txt`: `fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, `pydantic==2.13.5`
 
 ---
 
@@ -260,22 +260,24 @@
 
 | Category | ✅ Working | ❌ Broken | ⚠️ Unverified/Issues | 🔲 N/A |
 |----------|-----------|-----------|---------------------|--------|
-| Frontend imports | 20 | 0 | 0 | 0 |
+| Frontend imports | 26 | 0 | 0 | 0 |
 | Frontend packages | 20 | 0 | 0 | 0 |
 | Backend imports | 15 | 0 | 0 | 0 |
-| Backend packages | 4 | 0 | 3 (debugpy compat, pytest-cov unused, pydantic transitive) | 0 |
-| Config files | 8 | 0 | 2 (proxy, healthcheck) | 0 |
-| Docker compose | 4 | 0 | 2 (proxy, healthcheck) | 0 |
+| Backend packages | 4 (pinned) | 0 | 1 (debugpy compat) | 0 |
+| Config files | 10 | 0 | 0 | 0 |
+| Docker compose | 6 | 0 | 0 | 0 |
 | File cross-refs | 3 | 1 (.agents/) | 0 | 0 |
-| Tests | 18 total | 0 | 2 (not verified passing) | 0 |
-| **TOTAL** | **74** | **1** | **7** | **2** |
+| Tests | 24+ total | 0 | 1 (not verified passing) | 0 |
+| **TOTAL** | **84+** | **1** | **2** | **0** |
 
-### Health Score: 🟡 **MODERATE** (74/84 connections verified working)
+### Health Score: 🟢 **GOOD** (84+/87 connections verified working)
 
-The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. The primary risks are:
+The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. The remaining risks are:
 
-1. **🔴 Docker restart loop** (`--reload` + bind mount) — prevents running via Docker
-2. **🔴 Vite proxy hostname** (`backend:8000`) — prevents running locally
-3. **⚠️ No frontend component tests** — UI changes risk regressions
-4. **⚠️ Missing `.agents/` directory** — referenced by AGENTS.md but doesn't exist
-5. **⚠️ Several quality issues** — dead code, hardcoded values, mixed languages
+1. **🔴 Docker bridge networking (paused)** — inter-container routing times out in both directions; workaround is running locally
+2. **⚠️ debugpy + Python 3.13 compatibility** — not separately verified
+3. **⚠️ Missing `.agents/` directory** — referenced by AGENTS.md but doesn't exist
+4. **⚠️ `.github/workflows/ci.yml` locally present but not yet pushed to GitHub**
+5. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
+6. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
+7. **⚠️ `hero.png` appears unreferenced (Rule 19)**

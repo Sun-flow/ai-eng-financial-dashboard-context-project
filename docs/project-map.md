@@ -1,6 +1,6 @@
 # Project Map — Financial Dashboard
 
-> **Last updated**: 2026-09-23  
+> **Last updated**: 2026-10-01  
 > **Scope**: Full-stack financial dashboard with React+TypeScript frontend and FastAPI/Python backend.
 
 ---
@@ -15,49 +15,59 @@ ai-eng-financial-dashboard-context-project/
 ├── README.es.md                 # Project overview (Spanish)
 │
 ├── backend/
-│   ├── Dockerfile               # FastAPI container (Python 3.13-slim, debugpy + uvicorn)
-│   ├── requirements.txt         # Python deps (fastapi, uvicorn, debugpy, pytest, httpx)
+│   ├── .dockerignore            # Excludes node_modules/, __pycache__/, .git/, .env, etc.
+│   ├── Dockerfile               # Multi-stage: base → development (debugpy) → production (uvicorn)
+│   ├── requirements.txt         # Python deps (pinned: fastapi==0.141.1, uvicorn, pydantic)
+│   ├── requirements-dev.txt     # Dev deps (debugpy, pytest, httpx)
 │   ├── app/
 │   │   ├── __init__.py          # Package init (empty)
-│   │   ├── main.py              # FastAPI app (module-level), CORS, router inclusion
-│   │   └── routes.py            # API route handlers + mock data + business logic
+│   │   ├── main.py              # FastAPI app (module-level), env-driven CORS, router inclusion
+│   │   └── routes.py            # 9 routes, mock data + business logic, @lru_cache
 │   └── tests/
 │       ├── conftest.py          # Pytest path setup for imports
-│       └── test_routes.py       # API tests (15 tests)
+│       └── test_routes.py       # API tests (15 tests, synchronous TestClient)
 │
 ├── frontend/
-│   ├── Dockerfile               # Node 24-alpine dev image
+│   ├── .dockerignore            # Excludes node_modules/, dist/, .git/, .env, etc.
+│   ├── .env.example             # VITE_API_BASE_URL override for backend origin
+│   ├── Dockerfile               # Multi-stage: base → development (Vite dev) → build → production (nginx)
 │   ├── components.json          # shadcn/ui components config
 │   ├── eslint.config.js         # ESLint flat config
-│   ├── index.html               # Vite HTML entry point
+│   ├── index.html               # Vite HTML entry point, title "Financial Dashboard"
 │   ├── package.json             # Node dependencies & scripts
 │   ├── tsconfig.json            # Root TS config (references)
 │   ├── tsconfig.app.json        # App TS config
 │   ├── tsconfig.node.json       # Node TS config
-│   ├── vite.config.ts           # Vite bundler config (+ React, Tailwind, proxy)
-│   ├── .env.example             # VITE_API_BASE_URL override
+│   ├── vite.config.ts           # Vite config (+ React, Tailwind, proxy via env var)
 │   ├── public/
 │   │   └── favicon.svg          # ✅ Exists — browser tab icon
 │   └── src/
-│       ├── App.tsx              # Root React component (fetching, state, rendering)
+│       ├── App.tsx              # Root React component (fetch via useFinancialData hook)
 │       ├── index.css            # Global styles / Tailwind CSS 4 + oklch theming
 │       ├── main.tsx             # React entry point
-│       ├── assets/              # Static assets (empty)
+│       ├── test-setup.ts        # Vitest setup: jest-dom matchers
+│       ├── assets/
+│       │   └── hero.png         # Hero image (⚠️ appears unreferenced — see Rule 19)
 │       ├── components/
+│       │   ├── error-boundary.tsx        # ErrorBoundary wrapping Dashboard
+│       │   ├── error-boundary.test.tsx   # 3 tests (normal, catch+fallback, custom fallback)
 │       │   ├── dashboard/
 │       │   │   ├── dashboard-header.tsx
+│       │   │   ├── dashboard-header.test.tsx
 │       │   │   ├── income-outcome-chart.tsx
+│       │   │   ├── income-outcome-chart.test.tsx
 │       │   │   ├── kpi-card.tsx
+│       │   │   ├── kpi-card.test.tsx
 │       │   │   ├── kpi-row.tsx
-│       │   │   └── profit-percent-chart.tsx
+│       │   │   ├── profit-percent-chart.tsx
+│       │   │   └── profit-percent-chart.test.tsx
 │       │   └── ui/
 │       │       ├── card.tsx     # shadcn/ui Card primitive
 │       │       └── skeleton.tsx # shadcn/ui Skeleton primitive
 │       └── lib/
 │           ├── financial-types.ts       # TypeScript interfaces (FinancialMovement, etc.)
-│           ├── financial-utils.test.ts  # Vitest: 3 cases, 2 describe blocks
-│           ├── financial-utils.ts       # computeKPIs, computeMonthlyData, formatCurrency, etc.
-│           ├── mock-data.ts             # 57 hardcoded mock movements (⚠️ dead code — unused)
+│           ├── financial-utils.test.ts  # Vitest: 9 cases, 4 describe blocks
+│           ├── financial-utils.ts       # computeKPIs, computeMonthlyData, formatCurrency, computePeriodLabel
 │           └── utils.ts                 # cn() helper (clsx + tailwind-merge)
 ```
 
@@ -96,10 +106,10 @@ ai-eng-financial-dashboard-context-project/
 
 ### Data Flow
 
-1. **`App.tsx`** mounts → calls `fetchFinancialData()` → `GET /api/metrics` (via Vite proxy)
-2. **Backend** (`routes.py`) returns `FinancialMovement[]` from `generate_mock_movements(seed=42)` (360 items)
-3. **Frontend** transforms via `financial-utils.ts`: `computeKPIs()` + `computeMonthlyData()`
-4. **Dashboard components** render KPIs, income/outcome chart, profit chart
+1. **`App.tsx`** mounts → calls `useFinancialData()` hook → `GET /api/metrics` (via Vite proxy)
+2. **Backend** (`routes.py`) returns `FinancialMovement[]` from `@lru_cache`-decorated `generate_mock_movements(seed=42)` (360 items, cached after first call)
+3. **Frontend** transforms via `financial-utils.ts`: `computeKPIs()` + `computeMonthlyData()` + `computePeriodLabel()`
+4. **Dashboard components** (wrapped in `<ErrorBoundary>`) render KPIs, income/outcome chart, profit chart
 
 ---
 
@@ -108,7 +118,7 @@ ai-eng-financial-dashboard-context-project/
 ### `backend/app/main.py`
 - FastAPI app created at **module level** (`app = FastAPI()`), no factory/`create_app()` function
 - No lifespan handler — router inclusion and CORS middleware are configured at module scope
-- CORS: `allow_origins=["*"]` (permissive, for development)
+- CORS: driven by `CORS_ORIGINS` environment variable (comma-separated, default `"*"`)
 
 ### `backend/app/routes.py`
 **Endpoints (9 total: 1 health + 8 data):**
@@ -120,7 +130,7 @@ ai-eng-financial-dashboard-context-project/
 | GET | `/api/metrics/facets` | Available filter facets | — |
 | GET | `/api/metrics/summary` | Aggregated income/outcome/net per period | `group_by`, dates, filters |
 | GET | `/api/metrics/categories/top` | Top categories by operation type | `operation_type`, `limit`, dates, filters |
-| GET | `/api/metrics/comparison` | Compare net between two periods | `strat_date`, `end_date`, `business_type` |
+| GET | `/api/metrics/comparison` | Compare net between two periods | `start_date`, `end_date`, `business_type` |
 | GET | `/api/metrics/alerts` | Spending alerts (outcome spikes) | `threshold`, `group_by`, dates, filters |
 | GET | `/api/metrics/b2b` | Movements filtered to B2B only | dates, `category`, `operation_type` |
 | GET | `/api/metrics/b2c` | Movements filtered to B2C only | dates, `category`, `operation_type` |
@@ -156,19 +166,21 @@ ai-eng-financial-dashboard-context-project/
 ### Component Tree
 
 ```
-<App>
-  <DashboardHeader period="2024 - Full Year" />
-  <KPIRow>                            ← receives KPIMetrics | null
-    <KPICard variant="income" />      ← Total Income
-    <KPICard variant="outcome" />     ← Total Outcome
-    <KPICard variant="profit" />      ← Profit
-    <KPICard variant="profitPercent" />  ← Profit Margin %
-  </KPIRow>
-  <div (2-column grid)>
-    <IncomeOutcomeChart />            ← Recharts LineChart (income & outcome lines)
-    <ProfitPercentChart />            ← Recharts LineChart (profit % + reference line)
-  </div>
-</App>
+<ErrorBoundary>
+  <App>
+    <DashboardHeader period={periodLabel ?? undefined} />
+    <KPIRow>                            ← receives KPIMetrics | null
+      <KPICard variant="income" />      ← Total Income
+      <KPICard variant="outcome" />     ← Total Outcome
+      <KPICard variant="profit" />      ← Profit
+      <KPICard variant="profitPercent" />  ← Profit Margin %
+    </KPIRow>
+    <div (2-column grid)>
+      <IncomeOutcomeChart />            ← Recharts LineChart (income & outcome lines)
+      <ProfitPercentChart />            ← Recharts LineChart (profit % + reference line)
+    </div>
+  </App>
+</ErrorBoundary>
 ```
 
 ### Type System (`financial-types.ts`)
@@ -203,9 +215,11 @@ interface MonthlyData {
 | `formatPercent` | value: number | string (`"X.XX%"`) |
 
 ### Unit Tests (`financial-utils.test.ts`)
-- **3 test cases** in **2 describe blocks**:
+- **9 test cases** in **4 describe blocks**:
   - `computeKPIs` describe: `calculates totals and profit values`, `returns 0 profitPercent when there is no income`
   - `computeMonthlyData` describe: `returns chronological year-month points with aggregated totals`
+  - `formatters` describe: `formats currency without decimals`, `formats percent with one decimal`
+  - `computePeriodLabel` describe: `returns null for empty data`, `returns 'Full Year' label when data spans Jan–Dec of one year`, `returns month range when data spans multiple years`, `returns month range for a partial single year`
 
 ### Dashboard Components
 
@@ -221,13 +235,14 @@ interface MonthlyData {
 - `card.tsx`: `Card`, `CardHeader`, `CardTitle`, `CardContent`, `CardDescription`
 - `skeleton.tsx`: `Skeleton` loading placeholder
 
-### State Management (in `App.tsx`)
+### State Management (in `use-financial-data.ts` hook)
 - `const [loading, setLoading] = useState(true);`
 - `const [error, setError] = useState<string | null>(null);`
-- `const [data, setData] = useState<FinancialMovement[]>([]);`
+- `const [movements, setMovements] = useState<FinancialMovement[]>([]);`
 - **Loading state:** Skeleton placeholders
-- **Error state:** Red error banner with Spanish message
+- **Error state:** Inline error banner with English message: `"Could not load financial data. Check the backend API."`
 - **Empty state:** "No data available" text in charts
+- **Error boundary:** `<ErrorBoundary>` wraps `<Dashboard>` for render-error recovery
 
 ---
 
@@ -237,7 +252,7 @@ interface MonthlyData {
 - React plugin enabled
 - Tailwind plugin
 - Path alias `@/` → `src/`
-- Proxy: `/api` → `http://backend:8000`
+- Proxy: `/api` → `VITE_API_PROXY_TARGET` env var (default `http://localhost:8000`)
 
 ### `tsconfig.app.json`
 - Target: ES2020, JSX: react-jsx, Strict mode
