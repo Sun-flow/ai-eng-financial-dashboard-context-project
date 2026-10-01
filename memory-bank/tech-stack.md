@@ -24,7 +24,7 @@
 - Images: backend `python:3.13-slim`; frontend dev/build `node:24-alpine`; frontend prod `nginx:alpine`.
 - Backend: runtime `requirements.txt`; dev/test `requirements-dev.txt`; full Python 3.13 lock `requirements.lock`.
 - Frontend: `package.json` + `package-lock.json`.
-- Untracked `.github/workflows/ci.yml`: Python 3.13/Node 24; backend tests; frontend lint, tests, build.
+- Tracked `.github/workflows/ci.yml`: Python 3.13/Node 24; backend tests; frontend lint, tests, build.
 
 ## Configuration
 

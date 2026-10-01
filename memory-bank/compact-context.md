@@ -47,7 +47,6 @@ Backend: `cd backend && python -m pytest -q`; frontend: `cd frontend && npm test
 
 ## Next
 
-- Review/commit untracked CI workflow.
 - Close R8, R13, R16, R17, R19 gaps in the assessment.
 - Synchronize memory bank after changes.
 - Defer database, production config, and bridge remediation until explicitly scoped.

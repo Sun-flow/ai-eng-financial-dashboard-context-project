@@ -30,8 +30,7 @@
 
 | Import | Target | Status | Evidence |
 |--------|--------|--------|----------|
-| `useFinancialData` | `@/hooks/use-financial-data` | ✅ | Hook exists, encapsulating fetch + state |
-| `computePeriodLabel` | `@/lib/financial-utils` | ✅ | Function exists and exported |
+| `useFinancialData` | `@/hooks/use-financial-data` | ✅ | Hook exists, encapsulating fetch + state (returns `metrics`, `monthlyData`, `periodLabel`, `loading`, `error`) |
 | `DashboardHeader` | `@/components/dashboard/dashboard-header` | ✅ | File + named export exist |
 | `KPIRow` | `@/components/dashboard/kpi-row` | ✅ | File + named export exist |
 | `IncomeOutcomeChart` | `@/components/dashboard/income-outcome-chart` | ✅ | File + named export exist |
@@ -42,17 +41,17 @@
 
 | Source | Import | Target | Status | Evidence |
 |--------|--------|--------|--------|----------|
-| `dashboard-header.tsx` | `Card` | `@/components/ui/card` | ✅ | shadcn Card component exported |
-| `dashboard-header.tsx` | `Banknote` | `lucide-react` | ✅ | Package dependency exists |
-| `kpi-card.tsx` | `Card`, etc. | `@/components/ui/card` | ✅ | Works |
+| `dashboard-header.tsx` | `LayoutDashboard` | `lucide-react` | ✅ | Package dependency exists |
+| `kpi-card.tsx` | `Card, CardContent` | `@/components/ui/card` | ✅ | Works |
 | `kpi-card.tsx` | `Skeleton` | `@/components/ui/skeleton` | ✅ | Works |
-| `kpi-card.tsx` | `formatCurrency` | `@/lib/financial-utils` | ✅ | Function exported |
+| `kpi-card.tsx` | `cn` | `@/lib/utils` | ✅ | Function exported |
+| `kpi-card.tsx` | `LucideIcon` (type) | `lucide-react` | ✅ | Package dependency exists |
 | `kpi-row.tsx` | `KPIMetrics` | `@/lib/financial-types` | ✅ | Interface exported |
 | `kpi-row.tsx` | `KPICard` | `./kpi-card` | ✅ | Relative import |
-| `income-outcome-chart.tsx` | `MonthlyData` | `@/lib/financial-types` | ✅ | Interface exported |
+| `income-outcome-chart.tsx` | `MonthlyDataPoint` (type) | `@/lib/financial-types` | ✅ | Interface exported |
 | `income-outcome-chart.tsx` | `formatCurrency` | `@/lib/financial-utils` | ✅ | Function exported |
 | `income-outcome-chart.tsx` | Recharts components | `recharts` | ✅ | Package dependency exists |
-| `profit-percent-chart.tsx` | `MonthlyData` | `@/lib/financial-types` | ✅ | Interface exported |
+| `profit-percent-chart.tsx` | `MonthlyDataPoint` (type) | `@/lib/financial-types` | ✅ | Interface exported |
 | `profit-percent-chart.tsx` | `formatPercent` | `@/lib/financial-utils` | ✅ | Function exported |
 | `profit-percent-chart.tsx` | Recharts components | `recharts` | ✅ | Package dependency exists |
 | `utils.ts` | `clsx`, `twMerge` | `clsx`, `tailwind-merge` | ✅ | Packages in dependencies |
@@ -213,7 +212,7 @@
 
 | File A | References File B | Found? | Status |
 |--------|------------------|--------|--------|
-| `AGENTS.md` | `.agents/` directory | ❌ | Directory does not exist |
+| `AGENTS.md` | `.agents/` directory | ✅ | Directory exists with 22 rule files |
 | `AGENTS.md` | `memory-bank/` directory | ✅ | Exists at `/memories/repo/` (in memory system) |
 | `index.html` | `/favicon.svg` | ✅ | File exists at `frontend/public/favicon.svg` |
 | `README.md` | `frontend/`, `backend/`, `docker-compose.yml` | ✅ | All exist |
@@ -267,17 +266,16 @@
 | Backend packages | 4 (pinned) | 0 | 1 (debugpy compat) | 0 |
 | Config files | 10 | 0 | 0 | 0 |
 | Docker compose | 6 | 0 | 0 | 0 |
-| File cross-refs | 3 | 1 (.agents/) | 0 | 0 |
+| File cross-refs | 4 | 0 | 0 | 0 |
 | Tests | 24+ total | 0 | 1 (not verified passing) | 0 |
-| **TOTAL** | **84+** | **1** | **2** | **0** |
+| **TOTAL** | **85+** | **0** | **2** | **0** |
 
-### Health Score: 🟢 **GOOD** (84+/87 connections verified working)
+### Health Score: 🟢 **GOOD** (85+/87 connections verified working)
 
 The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. The remaining risks are:
 
 1. **🔴 Docker bridge networking (paused)** — inter-container routing times out in both directions; workaround is running locally
 2. **⚠️ debugpy + Python 3.13 compatibility** — not separately verified
-3. **⚠️ Missing `.agents/` directory** — referenced by AGENTS.md but doesn't exist
-4. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
-5. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
-7. **⚠️ `hero.png` appears unreferenced (Rule 19)**
+3. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
+4. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
+5. **⚠️ `hero.png` appears unreferenced (Rule 19)**

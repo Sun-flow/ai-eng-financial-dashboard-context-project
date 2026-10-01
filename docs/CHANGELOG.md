@@ -32,7 +32,7 @@
 
 ## Overview
 
-This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app is now fully runnable in Docker, has proper error handling, loading states, and 15+ passing tests.
+This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app has proper error handling, loading states, and 15+ passing tests. **Note**: Docker bridge networking remains broken (see 🔶 Deferred section above) — the app is runnable locally outside Docker.
 
 ---
 

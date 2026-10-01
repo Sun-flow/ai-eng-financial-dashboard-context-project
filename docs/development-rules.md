@@ -22,9 +22,9 @@ These rules apply across the entire repository — frontend, backend, and infras
 
 ### RULE 1: Declared dependencies must be exhaustive; every import must resolve to a declared or stdlib dependency.
 
-- **Fact 1a:** `pydantic` is imported in `routes.py` but not listed in `requirements.txt` — it resolves only transitively via `fastapi`, creating a fragile dependency. ([health-assessment.md] Backend Dependencies table)
+- **Fact 1a:** `pydantic` is imported in `routes.py` and listed in `requirements.txt` as `pydantic==2.13.5` — declared dependency resolved. ([routes.py] [requirements.txt])
 - **Fact 1b:** All 20 frontend packages in `package.json` are confirmed used in code, and no used import lacks a matching package entry. ([health-assessment.md] Dependency Status table)
-- **Fact 1c:** `pytest-cov` is listed in `requirements.txt` but unused in any config — it is a declared dependency with zero consumption. ([health-assessment.md] Backend Dependencies table)
+- **Fact 1c:** `pytest-cov` is not listed in `requirements.txt` — coverage is not currently configured. ([requirements.txt])
 
 **Corollary 1.1:** Unused dependencies must be removed.
 
@@ -46,7 +46,7 @@ These rules apply across the entire repository — frontend, backend, and infras
 
 ### RULE 4: Side effects belong at the container level; presentational components must be pure.
 
-- **Fact 4a:** `App.tsx` is the sole owner of `useState` and `useCallback` for `fetchFinancialData` — no child component manages its own fetch or global state. ([conventions.md] §1.1)
+- **Fact 4a:** The `useFinancialData` custom hook in `hooks/use-financial-data.ts` is the sole owner of state (`useState` for `metrics`, `monthlyData`, `periodLabel`, `loading`, `error`) and data-fetching logic — no child component manages its own fetch or global state. `App.tsx` destructures the hook's return and passes values as props. ([conventions.md] §1.1)
 - **Fact 4b:** `kpi-card.tsx`, `kpi-row.tsx`, `dashboard-header.tsx`, `income-outcome-chart.tsx`, and `profit-percent-chart.tsx` receive all data via props and contain no data-fetching logic. ([project-map.md] Component Tree)
 
 **Corollary 4.1:** Child components must not import `fetch`, `axios`, or any HTTP client.
@@ -63,7 +63,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 - **Fact 5a:** Components: `kpi-card.tsx` → `KPICard`, `kpi-row.tsx` → `KPIRow`, `dashboard-header.tsx` → `DashboardHeader`. ([conventions.md] §2.1)
 - **Fact 5b:** Utilities: `financial-utils.ts` → `computeKPIs`, `formatCurrency`, `formatPercent`. ([conventions.md] §2.1)
-- **Fact 5c:** Types: `financial-types.ts` → `FinancialMovement`, `KPIMetrics`, `MonthlyData`. ([conventions.md] §2.1)
+- **Fact 5c:** Types: `financial-types.ts` → `FinancialMovement`, `KPIMetrics`, `MonthlyDataPoint`. ([conventions.md] §2.1)
 
 **Corollary 5.1:** New component files must follow this naming pattern without exception.
 
@@ -74,7 +74,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 ### RULE 7: Data transformation must live in pure utility functions, not inside components or hooks.
 
-- **Fact 7a:** `computeKPIs` and `computeMonthlyData` are standalone exported functions in `financial-utils.ts`, imported and called in `App.tsx` between fetch and render. ([project-map.md] Data Flow section)
+- **Fact 7a:** `computeKPIs`, `computeMonthlyData`, and `computePeriodLabel` are standalone exported functions in `financial-utils.ts`, imported and called inside `useFinancialData()` between fetch and return. ([project-map.md] Data Flow section)
 - **Fact 7b:** Both functions accept `FinancialMovement[]` and return derived types — no side effects, no state access. ([conventions.md] §1.3)
 
 ### RULE 8: Recharts components must use consistent color semantics: green (`#10b981`) for income, red (`#ef4444`) for outcome.
@@ -97,7 +97,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 ### RULE 11: Mock data generators must use a fixed seed for reproducibility and must be cached, not regenerated per request.
 
 - **Fact 11a:** `generate_mock_movements(seed=42)` uses a deterministic seed — output is reproducible. ([project-map.md] Backend Details)
-- **Fact 11b:** The function is decorated with `@lru_cache(maxsize=1)`, so the 360 movements are generated once (per unique `(seed, today)` tuple) and served from cache on all subsequent requests — no per-request rebuild. ([routes.py])
+- **Fact 11b:** The function is decorated with `@lru_cache(maxsize=1)`, so the 360 movements are generated once (keyed by the `(seed, today)` tuple) and served from cache on all subsequent requests — no per-request rebuild. ([routes.py])
 - **Fact 11c:** `_year_for_month` uses `date.today()` for year assignment when `today` is `None` (the default caller), making the initial cache-fill output date-dependent despite the fixed seed. ([operational-blockers.md] Issue #3)
 
 ---

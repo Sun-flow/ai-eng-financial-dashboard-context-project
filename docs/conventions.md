@@ -71,7 +71,7 @@ app.include_router(router)
 | kebab-case for component files | `kpi-card.tsx`, `kpi-row.tsx`, `dashboard-header.tsx` | ✅ |
 | kebab-case for lib files | `financial-types.ts`, `financial-utils.ts`, `utils.ts` | ✅ |
 | PascalCase for component exports | `KPICard`, `KPIRow`, `DashboardHeader` | ✅ |
-| PascalCase for interfaces/types | `FinancialMovement`, `KPIMetrics`, `MonthlyData` | ✅ |
+| PascalCase for interfaces/types | `FinancialMovement`, `KPIMetrics`, `MonthlyDataPoint` | ✅ |
 | camelCase for functions/variables | `computeKPIs`, `formatCurrency`, `fetchFinancialData` | ✅ |
 | snake_case for Python | `generate_mock_movements`, `operation_type`, `create_date` | ✅ |
 

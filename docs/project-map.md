@@ -198,11 +198,11 @@ interface FinancialMovement {
 }
 
 interface KPIMetrics {
-  income: number; outcome: number; profit: number; profitPercent: number;
+  totalIncome: number; totalOutcome: number; profit: number; profitPercent: number;
 }
 
-interface MonthlyData {
-  month: string; income: number; outcome: number; profit: number; profitPercent: number;
+interface MonthlyDataPoint {
+  month: string; income: number; outcome: number; profitPercent: number;
 }
 ```
 
@@ -210,7 +210,7 @@ interface MonthlyData {
 | Function | Input | Output |
 |----------|-------|--------|
 | `computeKPIs` | movements: FinancialMovement[] | KPIMetrics |
-| `computeMonthlyData` | movements: FinancialMovement[] | MonthlyData[] |
+| `computeMonthlyData` | movements: FinancialMovement[] | MonthlyDataPoint[] |
 | `formatCurrency` | value: number | string (`"$X,XXX.XX"`) |
 | `formatPercent` | value: number | string (`"X.XX%"`) |
 
