@@ -210,7 +210,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 
 | File | Purpose |
 |------|---------|
-| `docs/operational-blockers.md` | Detailed analysis of 9 blockers with severity ratings, root causes, and fix descriptions |
+| `docs/operational-blockers.md` | Detailed analysis of 10 blockers with severity ratings, root causes, and fix descriptions |
 | `docs/planning.md` | 4-round execution plan with effort estimates, dependency graph, and file modification lists |
 
 ---
@@ -233,7 +233,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 | `frontend/src/App.tsx` | ErrorBoundary wrapper, English error message, loading state |
 | `frontend/vite.config.ts` | Configurable proxy target, Vitest config, `@` alias |
 
-### New Files (10)
+### New Files (11)
 
 | File | Purpose |
 |------|---------|
@@ -247,6 +247,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 | `frontend/src/components/dashboard/kpi-card.test.tsx` | KPICard tests (3 cases) |
 | `frontend/src/components/dashboard/income-outcome-chart.test.tsx` | IncomeOutcomeChart tests (3 cases) |
 | `frontend/src/components/dashboard/profit-percent-chart.test.tsx` | ProfitPercentChart tests (3 cases) |
+| `frontend/src/lib/financial-utils.test.ts` | Utility function tests (9 cases, 4 describe blocks) |
 
 ### Deleted Files (1)
 
@@ -258,7 +259,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 
 | File | Purpose |
 |------|---------|
-| `docs/operational-blockers.md` | 9 blockers identified and analyzed |
+| `docs/operational-blockers.md` | 10 blockers identified and analyzed |
 | `docs/planning.md` | 4-round execution plan |
 | `memory-bank/` | Project memory and context |
 
@@ -273,7 +274,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 | 3 | Mock data year mismatch (2025/2026 vs "2024") | 🟠 High | Optional `today` param, testable |
 | 4 | No healthcheck → startup race condition | 🟡 Medium | Healthcheck + `condition: service_healthy` |
 | 5 | `debugpy` + Python 3.13 compatibility | 🟡 Medium | Moved to dev-only requirements |
-| 6 | Missing favicon → 404 | 🟡 Medium | *(Still open — no favicon added)* |
+| 6 | Missing favicon → 404 | 🟡 Medium | `favicon.svg` added to `frontend/public/`; `index.html` icon link now resolves |
 | 7 | Generic HTML title "frontend" | 🟢 Low | Fixed to "Financial Dashboard" |
 | 8 | Dead code `mock-data.ts` unused | 🟢 Low | Deleted |
 | 9 | Error message in Spanish | 🟢 Low | Translated to English |

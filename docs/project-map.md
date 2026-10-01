@@ -157,7 +157,7 @@ ai-eng-financial-dashboard-context-project/
 | `MetricsAlert` | period, outcome_total, baseline_average, increase_ratio |
 
 ### Backend Tests (15 tests in `test_routes.py`)
-- Fixtures via `conftest.py` (path configuration only; TestClient is module-level in test file)
+- Fixtures via `conftest.py` (sys.path configuration plus a `client` fixture returning a fresh `TestClient(app)` per test)
 - Uses `pytest` + `fastapi.testclient.TestClient` (synchronous)
 - Coverage includes: mock generation, filter combinations, health endpoint, date ranges, B2B/B2C filtering, operation type filtering, category filtering
 

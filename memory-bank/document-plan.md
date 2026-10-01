@@ -9,6 +9,7 @@
 | `current-status.md` | Working behavior, blockers, warnings, product gaps, next priorities, checks | Complete |
 | `compact-context.md` | Short resume point for future agents | Current and consistent with the detailed files |
 | `document-plan.md` | Inventory and maintenance guidance for this memory bank | Current |
+| `agent-rule-compliance-assessment.md` | Rule-by-rule compliance evidence against `.agents/rules/` | Complete |
 
 ## Maintenance Rules
 
@@ -26,7 +27,6 @@
 - `docs/operational-blockers.md`: Docker and operational investigations
 - `docs/planning.md`: staged improvement plan
 - `.agents/rules/`: repository development rules
-- `memory-bank/agent-rule-compliance-assessment.md`: rule-by-rule compliance evidence
 
 ## Historical Context Retained
 

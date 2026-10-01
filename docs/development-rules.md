@@ -23,7 +23,7 @@ These rules apply across the entire repository — frontend, backend, and infras
 ### RULE 1: Declared dependencies must be exhaustive; every import must resolve to a declared or stdlib dependency.
 
 - **Fact 1a:** `pydantic` is imported in `routes.py` and listed in `requirements.txt` as `pydantic==2.13.5` — declared dependency resolved. ([routes.py] [requirements.txt])
-- **Fact 1b:** All 27 frontend packages in `package.json` (7 `dependencies` + 20 `devDependencies`) are confirmed used in code, and no used import lacks a matching package entry. ([health-assessment.md] Dependency Status table)
+- **Fact 1b:** All 28 frontend packages in `package.json` (7 `dependencies` + 21 `devDependencies`) are confirmed used in code, and no used import lacks a matching package entry. ([health-assessment.md] Dependency Status table)
 - **Fact 1c:** `pytest-cov` is not listed in `requirements.txt` — coverage is not currently configured. ([requirements.txt])
 
 **Corollary 1.1:** Unused dependencies must be removed.
@@ -117,7 +117,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 ### RULE 14: Python dependencies must be pinned to specific versions for reproducible builds.
 
 - **Fact 14a:** `requirements.txt` pins `fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, and `pydantic==2.13.5` to specific versions. ([health-assessment.md] Backend Dependencies)
-- **Fact 14b:** No lockfile (`requirements.lock`, `Pipfile.lock`, or `poetry.lock`) exists. ([health-assessment.md] Code Quality Observations — Infrastructure)
+- **Fact 14b:** A full transitive lockfile (`requirements.lock`) exists alongside `requirements.txt`, pinning resolved versions for reproducible installs. ([backend/requirements.lock])
 
 ---
 
@@ -125,7 +125,7 @@ These rules are language-specific (TypeScript/React or Python/FastAPI) but cross
 
 ### RULE 15: Backend routes must be tested via `TestClient` with isolated app instances.
 
-- **Fact 15a:** `test_routes.py` imports `from fastapi.testclient import TestClient` and creates the client at module level. ([health-assessment.md] Python Imports — tests)
+- **Fact 15a:** `test_routes.py` imports `from fastapi.testclient import TestClient`; a `client` fixture in `conftest.py` returns a fresh `TestClient(app)` instance per test to prevent state leakage. ([backend/tests/conftest.py])
 - **Fact 15b:** 15 test functions cover mock generation, health endpoint, filter combinations, date ranges, and B2B/B2C filtering. ([project-map.md] Backend Tests)
 
 ### RULE 16: Frontend utility functions must have Vitest unit tests with `describe`/`it` blocks.

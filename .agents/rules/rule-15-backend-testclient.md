@@ -7,7 +7,7 @@ Backend API tests
 Backend routes must be tested via `TestClient` from `fastapi.testclient` with isolated app instances.
 
 ## Rationale
-`TestClient` provides a lightweight HTTP client for FastAPI that doesn't require a running server — it invokes the ASGI app directly. This makes tests fast, self-contained, and suitable for CI. The current codebase already uses `TestClient` across 15 test functions covering mock generation, health check, filter combinations, date ranges, and B2B/B2C filtering, but the client is created at module level rather than via a fixture, which can leak state between tests.
+`TestClient` provides a lightweight HTTP client for FastAPI that doesn't require a running server — it invokes the ASGI app directly. This makes tests fast, self-contained, and suitable for CI. The current codebase uses `TestClient` across 15 test functions covering mock generation, health check, filter combinations, date ranges, and B2B/B2C filtering. A `client` pytest fixture in `backend/tests/conftest.py` returns a fresh `TestClient(app)` instance per test, preventing state leakage between tests.
 
 ## Application Guidance
 - Use `from fastapi.testclient import TestClient`.
@@ -17,6 +17,6 @@ Backend routes must be tested via `TestClient` from `fastapi.testclient` with is
 - Use `conftest.py` for shared fixtures.
 
 ## Supporting References
+- `backend/tests/conftest.py` – `client` pytest fixture returning a fresh `TestClient(app)` per test
 - `docs/health-assessment.md` – Python Imports — tests: `TestClient` imported and used in 15 tests
 - `docs/project-map.md` – Backend Tests: coverage includes health, filters, date ranges, B2B/B2C
-- `docs/health-assessment.md` – Backend Tests table: tests are synchronous, no fixtures for client creation
