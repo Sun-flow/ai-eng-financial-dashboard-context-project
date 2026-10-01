@@ -42,6 +42,8 @@ _Financial metrics dashboard with a React + TypeScript frontend and a FastAPI ba
 docker compose up --build
 ```
 
+> **Known limitation**: Docker bridge networking between the `frontend` and `backend` containers is currently broken in this environment (inter-container requests time out). If `docker compose up --build` leaves the dashboard stuck on "Loading…", run both services locally instead: `cd backend && pip install -r requirements.txt -r requirements-dev.txt && uvicorn app.main:app --reload --port 8000` in one terminal, and `cd frontend && npm install && npm run dev` in another. See `docs/operational-blockers.md` for details.
+
 The frontend uses the Vite proxy for `/api` by default, so no extra environment variables are required in local development or Codespaces.
 If you need to target a different backend origin, copy `frontend/.env.example` to `.env` and set `VITE_API_BASE_URL`.
 

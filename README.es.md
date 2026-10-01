@@ -42,6 +42,8 @@ _Dashboard de métricas financieras con frontend en React + TypeScript y backend
 docker compose up --build
 ```
 
+> **Limitación conocida**: en este entorno, la red bridge de Docker entre los contenedores `frontend` y `backend` actualmente no funciona (las peticiones entre contenedores agotan el tiempo de espera). Si `docker compose up --build` deja el dashboard atascado en "Loading…", ejecuta ambos servicios en local: `cd backend && pip install -r requirements.txt -r requirements-dev.txt && uvicorn app.main:app --reload --port 8000` en una terminal, y `cd frontend && npm install && npm run dev` en otra. Consulta `docs/operational-blockers.md` para más detalles.
+
 El frontend usa por defecto el proxy de Vite para `/api`, así que no necesitas variables de entorno extra ni en desarrollo local ni en Codespaces.
 Si necesitas apuntar a otro backend, copia `frontend/.env.example` como `.env` y define `VITE_API_BASE_URL`.
 

@@ -11,7 +11,7 @@
 
 1. **Everything in the 4-round plan is implemented and committed** except items explicitly listed as open/deferred below.
 2. **The app does NOT currently work end-to-end via `docker compose up`** because frontend ↔ backend containers cannot route to each other over the Docker bridge network (blocker #10). This is **paused by direction — do not chase it without explicit instruction**. Both containers are individually healthy.
-3. **Highest-value next task**: review and commit the GitHub Actions CI workflow, then keep the memory bank synchronized with future changes.
+3. **Highest-value next task**: keep the memory bank and `.agents/rules/` synchronized with future changes; the GitHub Actions CI workflow (`.github/workflows/ci.yml`) is already reviewed, tracked in git, and pushed.
 4. **Run and test locally (outside Docker)** for a working experience — see [Quick Start](#quick-start).
 
 ---
@@ -42,7 +42,7 @@
 - Healthcheck + `depends_on: condition: service_healthy` in `docker-compose.yml`.
 - `.dockerignore` for both services.
 - `docs/operational-blockers.md`, `docs/planning.md`, `docs/CHANGELOG.md`, `docs/conventions.md`, `docs/development-rules.md`, `docs/health-assessment.md`, `docs/project-map.md`.
-- `.agents/rules/` (22 rules) + `memory-bank/` (5 files).
+- `.agents/rules/` (22 rules) + `memory-bank/` (6 files).
 
 ---
 
@@ -155,7 +155,7 @@ frontend/
       ui/ card, skeleton
     lib/ financial-types.ts, financial-utils.ts (+ test), utils.ts
 docs/                        # planning, blockers, changelog, conventions, dev-rules...
-memory-bank/                 # project-overview, current-status, tech-stack, doc-plan, rule-assess
+memory-bank/                 # project-overview, current-status, tech-stack, doc-plan, compact-context, rule-assess
 .agents/rules/               # 22 numbered rules (binding)
 docker-compose.yml
 ```
@@ -166,7 +166,7 @@ docker-compose.yml
 
 - **Rule 4**: side effects only in container (App/hook); presentational components pure (props only).
 - **Rule 7**: transformations are pure functions (`computeKPIs`, `computeMonthlyData`).
-- **Rule 8**: charts green `#10b981` = income, red `#ef4444` = outcome.
+- **Rule 8**: charts should use green = income, red = outcome. **⚠️ Known gap**: current implementation uses `--chart-income`/`--chart-outcome` oklch hues (blue/orange), not green/red — not yet fixed.
 - **Rule 9**: snake_case Python, camelCase TS, kebab-case files, PascalCase components.
 - **Rule 11**: mock data seeded + cached (`@lru_cache`), never per-request.
 - **Rule 12/13**: healthchecks required; dev/prod image separation.

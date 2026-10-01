@@ -23,7 +23,7 @@ These rules apply across the entire repository — frontend, backend, and infras
 ### RULE 1: Declared dependencies must be exhaustive; every import must resolve to a declared or stdlib dependency.
 
 - **Fact 1a:** `pydantic` is imported in `routes.py` and listed in `requirements.txt` as `pydantic==2.13.5` — declared dependency resolved. ([routes.py] [requirements.txt])
-- **Fact 1b:** All 20 frontend packages in `package.json` are confirmed used in code, and no used import lacks a matching package entry. ([health-assessment.md] Dependency Status table)
+- **Fact 1b:** All 27 frontend packages in `package.json` (7 `dependencies` + 20 `devDependencies`) are confirmed used in code, and no used import lacks a matching package entry. ([health-assessment.md] Dependency Status table)
 - **Fact 1c:** `pytest-cov` is not listed in `requirements.txt` — coverage is not currently configured. ([requirements.txt])
 
 **Corollary 1.1:** Unused dependencies must be removed.

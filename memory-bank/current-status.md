@@ -51,7 +51,7 @@ The rule implementation pass is not fully closed. The current assessment identif
 
 ## Repository State
 
-`main` is pushed through `20f43bc`; all documentation, CI workflows, and memory-bank summaries are tracked and aligned with the current codebase state.
+`main` is pushed and up to date; all documentation, CI workflows, and memory-bank summaries are tracked and aligned with the current codebase state (see `git log` for the latest commit).
 
 ## Useful Checks
 

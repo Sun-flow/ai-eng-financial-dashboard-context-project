@@ -32,7 +32,7 @@
 
 ## Overview
 
-This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app has proper error handling, loading states, and 15+ passing tests. **Note**: Docker bridge networking remains broken (see 🔶 Deferred section above) — the app is runnable locally outside Docker.
+This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app has proper error handling, loading states, and 39 passing tests (15 backend, 24 frontend). **Note**: Docker bridge networking remains broken (see 🔶 Deferred section above) — the app is runnable locally outside Docker.
 
 ---
 
@@ -285,12 +285,13 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 | Layer | Test File | Tests | Status |
 |-------|-----------|-------|--------|
 | Backend | `backend/tests/test_routes.py` | 15 | ✅ All passing |
+| Frontend | `financial-utils.test.ts` | 9 | ✅ All passing |
 | Frontend | `dashboard-header.test.tsx` | 3 | ✅ All passing |
 | Frontend | `kpi-card.test.tsx` | 3 | ✅ All passing |
 | Frontend | `income-outcome-chart.test.tsx` | 3 | ✅ All passing |
 | Frontend | `profit-percent-chart.test.tsx` | 3 | ✅ All passing |
 | Frontend | `error-boundary.test.tsx` | 3 | ✅ All passing |
-| **Total** | | **30** | **✅ All passing** |
+| **Total** | | **39** | **✅ All passing** |
 
 ---
 

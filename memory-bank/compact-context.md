@@ -1,6 +1,6 @@
 # Compact Context - Financial Dashboard
 
-> **Updated**: September 29, 2026.
+> **Updated**: October 1, 2026.
 > **Details**: `docs/HANDOFF.md`, `docs/CHANGELOG.md`, `docs/operational-blockers.md`, `memory-bank/current-status.md`.
 
 ## State
@@ -27,7 +27,7 @@
 ## Rule Conventions
 
 - Side effects: container/hook; dashboard components: presentational.
-- Transformations: pure/tested; chart semantics: green income/red outcome.
+- Transformations: pure/tested; chart semantics should be green income/red outcome but are **not yet fixed** (current implementation uses blue/orange oklch hues — see R8 gap).
 - Names: Python snake_case; TypeScript camelCase; kebab-case files; PascalCase components/types.
 - Keep mocks seeded/cached, dependencies pinned, API parameters consistent, Docker contexts minimal.
 

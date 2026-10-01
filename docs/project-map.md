@@ -92,6 +92,8 @@ ai-eng-financial-dashboard-context-project/
                     docker-compose.yml
 ```
 
+> **Known limitation**: the frontend ↔ backend arrow above is the intended topology. Docker's bridge networking between the two containers is currently broken (see `docs/operational-blockers.md`), so `docker compose up --build` does not yet deliver working inter-container requests. The documented workaround is running both services locally (outside Docker) per `README.md`.
+
 ### Key Design Decisions
 
 | Decision | Choice | Rationale |
@@ -328,17 +330,25 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 
 ## 9. Key Observations
 
-1. **Mock data regenerated on every request** — seeded generator is deterministic, but uncached; could be memoized.
-2. **`mock-data.ts` is dead code** — 52 hand-written movements, never imported.
+1. **Mock data cached** — the seeded generator (`seed=42`) is decorated with `@lru_cache(maxsize=1)`, so it builds the 360 movements once and serves from cache on subsequent requests.
+2. **`mock-data.ts` removed** — the former dead-code file (52 hand-written movements, never imported) was deleted; all mock data now comes from the backend.
 3. **No shared API contract** — Python Pydantic + TypeScript types are duplicated manually.
 4. **No database** — All data is in-memory mock. Not production-ready.
 5. **Frontend only uses `/api/metrics`** — 8 other API endpoints exist but have no UI consumer.
-6. **Memory-bank exists at `/memories/repo/`** — 4 files for persistent project context.
-7. **Page title is `"frontend"`** — Vite default, not customized.
+6. **Memory-bank exists at `/memories/repo/`** — 6 files for persistent project context.
+7. **Page title is `"Financial Dashboard"`** — customized from the Vite scaffold default.
 8. **CI/CD present** — `.github/workflows/ci.yml` is tracked and pushed.
 9. **Modern stack (2026)** — React 19, TypeScript 6, Vite 8, Python 3.13.
 10. **9 operational blockers** documented in `docs/operational-blockers.md`.
-| http://localhost:8000/redoc  | ReDoc API docs                  |
+
+---
+
+## 10. API Documentation Links
+
+| URL | Description |
+|-----|-------------|
+| `http://localhost:8000/docs` | Swagger UI (interactive API docs) |
+| `http://localhost:8000/redoc` | ReDoc API docs |
 
 ---
 
@@ -346,13 +356,32 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 
 ```
 .
+├── .agents/
+│   └── rules/                     (22 rule files)
 ├── AGENTS.md
-├── docker-compse.yml
+├── docker-compose.yml
 ├── README.md
 ├── README.es.md
+├── docs/
+│   ├── CHANGELOG.md
+│   ├── HANDOFF.md
+│   ├── conventions.md
+│   ├── health-assessment.md
+│   ├── operational-blockers.md
+│   ├── planning.md
+│   └── project-map.md
+├── memory-bank/
+│   ├── agent-rule-compliance-assessment.md
+│   ├── compact-context.md
+│   ├── current-status.md
+│   ├── document-plan.md
+│   ├── project-overview.md
+│   └── tech-stack.md
 ├── backend/
+│   ├── .dockerignore
 │   ├── Dockerfile
 │   ├── requirements.txt
+│   ├── requirements-dev.txt
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── main.py
@@ -360,8 +389,8 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 │   └── tests/
 │       ├── conftest.py
 │       └── test_routes.py
-├── docs/                         ← Newly created
 ├── frontend/
+│   ├── .dockerignore
 │   ├── .env.example
 │   ├── components.json
 │   ├── Dockerfile
@@ -377,14 +406,24 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 │       ├── App.tsx
 │       ├── index.css
 │       ├── main.tsx
+│       ├── test-setup.ts
 │       ├── assets/
+│       │   └── hero.png
+│       ├── hooks/
+│       │   └── use-financial-data.ts
 │       ├── components/
+│       │   ├── error-boundary.tsx
+│       │   ├── error-boundary.test.tsx
 │       │   ├── dashboard/
 │       │   │   ├── dashboard-header.tsx
+│       │   │   ├── dashboard-header.test.tsx
 │       │   │   ├── income-outcome-chart.tsx
+│       │   │   ├── income-outcome-chart.test.tsx
 │       │   │   ├── kpi-card.tsx
+│       │   │   ├── kpi-card.test.tsx
 │       │   │   ├── kpi-row.tsx
-│       │   │   └── profit-percent-chart.tsx
+│       │   │   ├── profit-percent-chart.tsx
+│       │   │   └── profit-percent-chart.test.tsx
 │       │   └── ui/
 │       │       ├── card.tsx
 │       │       └── skeleton.tsx
@@ -392,6 +431,5 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 │           ├── financial-types.ts
 │           ├── financial-utils.test.ts
 │           ├── financial-utils.ts
-│           ├── mock-data.ts
 │           └── utils.ts
 ```

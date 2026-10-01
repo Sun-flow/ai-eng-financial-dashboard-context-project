@@ -72,7 +72,7 @@ app.include_router(router)
 | kebab-case for lib files | `financial-types.ts`, `financial-utils.ts`, `utils.ts` | ✅ |
 | PascalCase for component exports | `KPICard`, `KPIRow`, `DashboardHeader` | ✅ |
 | PascalCase for interfaces/types | `FinancialMovement`, `KPIMetrics`, `MonthlyDataPoint` | ✅ |
-| camelCase for functions/variables | `computeKPIs`, `formatCurrency`, `fetchFinancialData` | ✅ |
+| camelCase for functions/variables | `computeKPIs`, `formatCurrency`, `fetchFinancialData` (private helper in `use-financial-data.ts`) | ✅ |
 | snake_case for Python | `generate_mock_movements`, `operation_type`, `create_date` | ✅ |
 
 ### 2.2 API Route Naming
@@ -137,14 +137,18 @@ describe('computeKPIs', () => {
 **Pattern: Skeleton placeholders during data fetch**
 
 ```tsx
-{loading ? (
-  <Skeleton className="h-8 w-24" />
-) : (
-  <span>{formatCurrency(metrics.totalIncome)}</span>
-)}
+if (loading) {
+  return (
+    <Card>
+      <Skeleton className="h-4 w-28" />
+      {/* …additional skeleton placeholders for value and helper text */}
+    </Card>
+  );
+}
+return <Card>{formatCurrency(metrics.totalIncome)}</Card>;
 ```
 
-**Evidence:** `kpi-card.tsx` renders `<Skeleton>` when `loading` prop is true, with conditional rendering of the full card vs skeleton placeholders.
+**Evidence:** `kpi-card.tsx` early-returns a full skeleton `<Card>` when the `loading` prop is true, rather than a per-field ternary; the real (non-loading) card renders `value`/`label`/`helperText` as plain props.
 
 ### 4.2 Error States
 
@@ -223,7 +227,7 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
 }
 ```
 
-**Evidence:** `card.tsx` and `skeleton.tsx` use plain function components (not `forwardRef`) with the `cn()` utility and `data-slot` attributes for CSS slot targeting. The project uses shadcn/ui **blocks** (the "block" / function-component style), not the legacy `forwardRef` pattern.
+**Evidence:** `card.tsx` and `skeleton.tsx` use plain function components (not `forwardRef`) with the `cn()` utility and `data-slot` attributes for CSS slot targeting. This matches the current shadcn/ui CLI's generated component style (plain function components with `data-slot`), not the older `React.forwardRef`-based pattern from earlier shadcn/ui versions.
 
 ### 5.2 Chart Components
 
@@ -326,5 +330,4 @@ These are not fully implemented and would need to be established for collaborati
 - ⚠️ `utils.ts` has no dedicated utility test — violates Rule 16
 - ⚠️ `KPIRow`, `Card`, and `Skeleton` have no render tests
 - ⚠️ `frontend/src/assets/hero.png` appears unreferenced — needs intentional-use decision (Rule 19)
-- ⚠️ No lockfile for Python dependencies (Rule 14)
 - ⚠️ Docker bridge networking (#10) times out in both directions (paused)

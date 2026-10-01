@@ -7,15 +7,15 @@ All environment-dependent configuration (Docker, local dev, production)
 Configuration that differs between environments must be parameterized, not hardcoded. Hardcoded values that depend on environmental context (Docker vs. local, dev vs. prod) are bugs waiting to surface.
 
 ## Rationale
-Hardcoded environment-specific values force every developer to edit source files to match their setup, creating merge conflicts and making the project harder to onboard. The Vite proxy target `http://backend:8000` only works inside Docker; running locally requires editing `vite.config.ts`. CORS `["*"]` is appropriate for dev but dangerous for production. Parameterizing these values via environment variables makes the codebase portable.
+Hardcoded environment-specific values force every developer to edit source files to match their setup, creating merge conflicts and making the project harder to onboard. (Historical example: the Vite proxy target was once hardcoded to `http://backend:8000`, which only worked inside Docker and required editing `vite.config.ts` to run locally. It is now read from `VITE_API_PROXY_TARGET` with a `http://localhost:8000` fallback.) CORS `"*"` is appropriate for dev but dangerous for production; it is now read from the `CORS_ORIGINS` environment variable rather than hardcoded, though `"*"` remains the default and should be locked down before any production deployment.
 
 ## Application Guidance
 - Use environment variables with sensible defaults for any value that changes between environments.
 - Wire `.env.example` values into actual config; don't just document them.
-- For Vite, use `process.env.VITE_API_BASE_URL || "http://localhost:8000"`.
-- For CORS, read `ALLOWED_ORIGINS` from an environment variable.
+- For Vite, use `process.env.VITE_API_PROXY_TARGET || "http://localhost:8000"` for the dev-server proxy target.
+- For CORS, read `CORS_ORIGINS` (comma-separated) from an environment variable.
 
 ## Supporting References
-- `docs/operational-blockers.md` – Issue #2: Vite proxy `backend:8000` only resolves in Docker
-- `docs/project-map.md` – Configuration Files: `.env.example` exists but is not wired to proxy config
-- `docs/health-assessment.md` – Code Quality Observations – Backend: CORS hardcoded to `["*"]`
+- `frontend/vite.config.ts` – proxy target driven by `VITE_API_PROXY_TARGET`, defaulting to `http://localhost:8000`
+- `backend/app/main.py` – CORS origins driven by `CORS_ORIGINS` env var (comma-separated, default `"*"`)
+- `docker-compose.yml` – sets `VITE_API_PROXY_TARGET=http://backend:8000` and `CORS_ORIGINS=http://localhost:5173` for the containerized environment

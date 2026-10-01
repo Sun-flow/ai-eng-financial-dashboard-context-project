@@ -7,7 +7,7 @@ Frontend presentational components
 Every presentational component must at minimum have a render test that validates loading, data, and empty states.
 
 ## Rationale
-Presentational components are deterministic — given props X, they render output Y. This makes them ideal for render testing. The `kpi-card.tsx` component conditionally renders `<Skeleton>` or `<span>` depending on the `loading` prop; both chart components branch on all-zero data vs. real data. None of these branches have test coverage. A render test for each state catches regressions when props change or the component is refactored.
+Presentational components are deterministic — given props X, they render output Y. This makes them ideal for render testing. `kpi-card.tsx`, `dashboard-header.tsx`, `income-outcome-chart.tsx`, `profit-percent-chart.tsx`, and `error-boundary.tsx` each have a `*.test.tsx` file (3 tests apiece, 15 total) covering loading/non-loading and variant-specific rendering. The remaining gap is `kpi-row.tsx`, which has no render test — a render test for each state catches regressions when props change or the component is refactored.
 
 ## Application Guidance
 - Use `@testing-library/react` for rendering and assertions.
@@ -19,5 +19,5 @@ Presentational components are deterministic — given props X, they render outpu
 
 ## Supporting References
 - `docs/conventions.md` – §4.1: `kpi-card.tsx` renders `<Skeleton>` when `loading` is true
-- `docs/health-assessment.md` – Test Coverage Gaps: frontend components have zero tests
-- `docs/health-assessment.md` – Component Imports: 5 dashboard components with branching render logic
+- `docs/health-assessment.md` – Test Status table: component render test coverage (15 tests across 5 components)
+- `frontend/src/components/dashboard/kpi-row.tsx` – presentational component still without a render test

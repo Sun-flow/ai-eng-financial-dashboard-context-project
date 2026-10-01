@@ -18,4 +18,4 @@ Pure functions — deterministic, side-effect-free, with no state access — are
 ## Supporting References
 - `docs/project-map.md` – Data Flow section: `computeKPIs` and `computeMonthlyData` called between fetch and render
 - `docs/conventions.md` – §1.3: Data flow pattern: Fetch → Transform → Render
-- `docs/health-assessment.md` – Frontend tests: 3 Vitest tests for these pure functions
+- `docs/health-assessment.md` – Frontend tests: 3 Vitest tests for these two functions (2 for `computeKPIs`, 1 for `computeMonthlyData`), part of 9 total in `financial-utils.test.ts`

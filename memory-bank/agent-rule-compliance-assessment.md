@@ -1,6 +1,6 @@
 # Agent Rule Compliance Assessment
 
-> **Updated**: September 29, 2026
+> **Updated**: October 1, 2026
 > **Scope**: 22 rules in `.agents/rules/`
 > **Baseline**: implementation commit `6a839a8` plus current CI and dependency updates
 

@@ -7,7 +7,7 @@ Frontend `lib/` utility functions
 Frontend utility functions must have Vitest unit tests with `describe`/`it` blocks.
 
 ## Rationale
-Utility functions (transformations, formatters, validators) are the easiest and most valuable unit tests: they have no dependencies on the DOM, network, or component tree. The current codebase has 3 such tests for `computeKPIs` and `computeMonthlyData` using Vitest with `describe`/`it` blocks — a pattern that must be maintained for all new utility functions.
+Utility functions (transformations, formatters, validators) are the easiest and most valuable unit tests: they have no dependencies on the DOM, network, or component tree. The current codebase has 9 such tests across 4 `describe` blocks (`computeKPIs`, `computeMonthlyData`, `formatters`, `computePeriodLabel`) in `financial-utils.test.ts`, using Vitest with `describe`/`it` blocks — a pattern that must be maintained for all new utility functions.
 
 ## Application Guidance
 - Create test files alongside the source file: `financial-utils.test.ts` next to `financial-utils.ts`.
@@ -17,6 +17,6 @@ Utility functions (transformations, formatters, validators) are the easiest and 
 - Run tests with `npx vitest run` before committing.
 
 ## Supporting References
-- `docs/health-assessment.md` – Frontend Tests: 3 test cases, 2 describe blocks
-- `docs/health-assessment.md` – Test Coverage Gaps: only utility functions have tests; components have zero tests
+- `frontend/src/lib/financial-utils.test.ts` – 9 test cases across 4 describe blocks
+- `docs/health-assessment.md` – Test Status table: frontend utility and component test counts
 - `docs/conventions.md` – §3.2: Vitest + describe/it block convention

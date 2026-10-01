@@ -7,7 +7,7 @@ Frontend (`package.json`), Backend (`requirements.txt`)
 Declared dependencies must be exhaustive; every import must resolve to a declared or stdlib dependency. Unused dependencies must be removed.
 
 ## Rationale
-Transitive-only dependencies (e.g. `pydantic` coming through `fastapi`) create fragile builds: an upgrade to `fastapi` could drop the transitive dependency, breaking imports silently. Unused declared dependencies (e.g. `pytest-cov`) bloat install size and obscure what the project actually needs. Full bidirectionality — every declared dep is used, every used import is declared — ensures the dependency file is a reliable contract.
+Transitive-only dependencies create fragile builds: relying on a package only because a direct dependency happens to pull it in (rather than declaring it directly) means an upstream change could silently break imports. Unused declared dependencies bloat install size and obscure what the project actually needs. Full bidirectionality — every declared dep is used, every used import is declared — ensures the dependency file is a reliable contract. (Historical note: `pydantic` was once only transitive via `fastapi` and has since been pinned directly in `requirements.txt`.)
 
 ## Application Guidance
 - When adding an import, check whether the package is directly listed in `requirements.txt` (Python) or `package.json` (TypeScript).
@@ -16,6 +16,6 @@ Transitive-only dependencies (e.g. `pydantic` coming through `fastapi`) create f
 - Remove packages that are declared but never imported anywhere.
 
 ## Supporting References
-- `docs/health-assessment.md` – Backend Dependencies table: `pydantic` imported but not in `requirements.txt`
-- `docs/health-assessment.md` – Backend Dependencies table: `pytest-cov` declared but unused
-- `docs/health-assessment.md` – Dependency Status table: all 20 frontend packages confirmed used
+- `backend/requirements.txt` – `pydantic==2.13.5` is pinned directly (previously only transitive via `fastapi`)
+- `backend/requirements.txt` / `backend/requirements-dev.txt` – no `pytest-cov` dependency is declared anywhere in the project
+- `frontend/package.json` – 27 total declared packages (7 dependencies + 20 devDependencies), all confirmed used in code or build config

@@ -7,7 +7,7 @@ All user-facing strings in the frontend codebase
 All user-facing strings in the codebase must use the same natural language.
 
 ## Rationale
-Mixed-language interfaces confuse users and signal inconsistency in the product. The current codebase is predominantly English, but `App.tsx` contains a Spanish error message: `"No se pudo cargar la información financiera. Revisa la API de backend."` This creates a jarring experience for English-speaking users and implies incomplete localization. If internationalization is needed, it should use a proper i18n library, not ad-hoc mixing.
+Mixed-language interfaces confuse users and signal inconsistency in the product. A prior audit found a Spanish error message in `App.tsx`: `"No se pudo cargar la información financiera. Revisa la API de backend."` This has since been corrected — the error message now lives in `useFinancialData` (`frontend/src/hooks/use-financial-data.ts`) as English text: `"Could not load financial data. Check the backend API."` If internationalization is needed, it should use a proper i18n library, not ad-hoc mixing.
 
 ## Application Guidance
 - All strings visible to users must be in the project's primary language (English).
@@ -16,4 +16,5 @@ Mixed-language interfaces confuse users and signal inconsistency in the product.
 - Internal-only strings (console logs, comments, variable names) are exempt.
 
 ## Supporting References
-- `docs/operational-blockers.md` – Issue #9: Error message in Spanish in `App.tsx`
+- `docs/operational-blockers.md` – Issue #9: Spanish error message in `App.tsx` corrected, marked ✅ FIXED
+- `frontend/src/hooks/use-financial-data.ts` – current English error message
