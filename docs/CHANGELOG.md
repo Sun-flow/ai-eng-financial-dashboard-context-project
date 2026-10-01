@@ -32,7 +32,7 @@
 
 ## Overview
 
-This release addresses **9 operational blockers**, delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app has proper error handling, loading states, and 39 passing tests (15 backend, 24 frontend). **Note**: Docker bridge networking remains broken (see 🔶 Deferred section above) — the app is runnable locally outside Docker.
+This release addresses **10 operational blockers** (9 fixed + 1 deferred/paused), delivers **4 rounds of planned improvements** (critical → production-ready), and adds **comprehensive test coverage** for both backend and frontend. The app has proper error handling, loading states, and 39 passing tests (15 backend, 24 frontend). **Note**: Docker bridge networking remains broken (see 🔶 Deferred section above) — the app is runnable locally outside Docker.
 
 ---
 
@@ -42,7 +42,7 @@ This release addresses **9 operational blockers**, delivers **4 rounds of planne
 
 - **File**: `backend/Dockerfile`
 - **What**: Restructured into a **multi-stage Dockerfile** with `base`, `development`, and `production` targets.
-- **Development target** keeps `--reload` + `debugpy` for local dev.
+- **Development target** includes `debugpy` for debugging support; **`--reload` intentionally omitted** (bind‑mount + `__pycache__` writes caused infinite restart loops — see [Issue #1](#11-backend-docker-restart-loop-eliminated) above).
 - **Production target** runs a clean `uvicorn` without `--reload`, eliminating the infinite restart loop caused by `--reload` + bind mount volume (`.pyc` / `__pycache__` file writes triggering cascading restarts).
 - **Docker Compose** targets `development` explicitly via `dockerfile: Dockerfile` + `target: development`.
 

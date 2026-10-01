@@ -339,7 +339,7 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 7. **Page title is `"Financial Dashboard"`** — customized from the Vite scaffold default.
 8. **CI/CD present** — `.github/workflows/ci.yml` is tracked and pushed.
 9. **Modern stack (2026)** — React 19, TypeScript 6, Vite 8, Python 3.13.
-10. **9 operational blockers** documented in `docs/operational-blockers.md`.
+10. **10 operational blockers** (9 fixed + 1 deferred/paused) documented in `docs/operational-blockers.md`.
 
 ---
 

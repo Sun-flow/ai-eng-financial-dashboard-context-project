@@ -68,7 +68,7 @@
 | lucide-react | ✅ dependencies | ✅ | ✅ |
 | clsx | ✅ dependencies | ✅ | ✅ |
 | tailwind-merge | ✅ dependencies | ✅ | ✅ |
-| class-variance-authority | ✅ dependencies | ✅ (`kpi-card.tsx` variant styling) | ✅ |
+| class-variance-authority | ✅ dependencies | ❌ (declared but never imported in any source file) | ⚠️ |
 | typescript | ✅ devDependencies | ✅ | ✅ |
 | @types/react | ✅ devDependencies | ✅ | ✅ |
 | @types/react-dom | ✅ devDependencies | ✅ | ✅ |
@@ -76,8 +76,8 @@
 | @vitejs/plugin-react | ✅ devDependencies | ✅ | ✅ |
 | @tailwindcss/vite | ✅ devDependencies | ✅ (Vite plugin imported in `vite.config.ts`) | ✅ |
 | tailwindcss | ✅ devDependencies | ✅ (Tailwind CSS engine) | ✅ |
-| autoprefixer | ✅ devDependencies | ✅ (PostCSS pipeline) | ✅ |
-| postcss | ✅ devDependencies | ✅ (PostCSS pipeline) | ✅ |
+| autoprefixer | ✅ devDependencies | ⚠️ (no PostCSS config exists; `@tailwindcss/vite` plugin handles CSS directly) | ⚠️ |
+| postcss | ✅ devDependencies | ⚠️ (same — no PostCSS config or reference in any build file) | ⚠️ |
 | vite | ✅ devDependencies | ✅ | ✅ |
 | vitest | ✅ devDependencies | ✅ | ✅ |
 | @vitest/coverage-v8 | ✅ devDependencies | ✅ (`test:coverage` script) | ✅ |
