@@ -34,8 +34,9 @@
 
 ## Rule Coverage Gaps
 
-The rule implementation pass is not fully closed. The current assessment identifies five remaining gaps:
+The rule implementation pass is not fully closed. The current assessment identifies six remaining gaps:
 
+- R1: 3 packages (`class-variance-authority`, `autoprefixer`, `postcss`) are declared but never imported — leftover from shadcn/ui CLI init.
 - R8: chart variables use blue/orange oklch hues instead of green/red semantic.
 - R13: development reload is intentionally disabled because it caused the Docker bind-mount restart loop.
 - R16: `frontend/src/lib/utils.ts` has no utility test.
@@ -44,7 +45,7 @@ The rule implementation pass is not fully closed. The current assessment identif
 
 ## Next Priorities
 
-1. Close the five rule coverage gaps above, beginning with chart semantics and missing tests.
+1. Close the six rule coverage gaps above, beginning with removing stale packages (R1), chart semantics (R8), and missing tests (R16/R17).
 2. (Completed) `.github/workflows/ci.yml` and `docs/planning.md` are tracked and pushed.
 3. Decide whether to investigate the paused Docker bridge issue in a host environment with network and iptables access.
 4. Plan production configuration, restricted CORS, and database integration only when those features are in scope.

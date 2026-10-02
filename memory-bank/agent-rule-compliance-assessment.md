@@ -8,18 +8,18 @@
 
 | Status | Count | Rules |
 |---|---:|---|
-| Compliant in source | 17 | R1-R7, R9-R12, R14-R15, R18, R20-R22 |
-| Partial or open coverage | 5 | R8, R13, R16, R17, R19 |
+| Compliant in source | 16 | R2-R7, R9-R12, R14-R15, R18, R20-R22 |
+| Partial or open coverage | 6 | R1, R8, R13, R16, R17, R19 |
 | CI-enforced directly or indirectly | 8 | R1, R3, R14, R15, R16, R17, R19, R22 |
 | Documentation-only assessment gaps | 0 | Assessment reflects the live repo |
 
-Original assessment: commit `6b9e417`, pre-implementation. Its "13 needs fix" result is obsolete; five gaps remain.
+Original assessment: commit `6b9e417`, pre-implementation. Its "13 needs fix" result is obsolete; six gaps remain.
 
 ## Rule-by-Rule Evidence
 
 | Rule | Status | Current application |
 |---|---|---|
-| R1 Exhaustive dependencies | Compliant | Runtime and development requirements are explicit; unused `user-event` was removed; frontend lockfile is committed. |
+| R1 Exhaustive dependencies | Partial | Runtime and development requirements are explicit; unused `user-event` was removed; frontend lockfile is committed. **3 packages (`class-variance-authority`, `autoprefixer`, `postcss`) are declared but never imported** — leftover from shadcn/ui CLI init, violating the "unused dependencies must be removed" clause. |
 | R2 Parameterized configuration | Compliant | `VITE_API_PROXY_TARGET` and `CORS_ORIGINS` are environment-driven with local defaults. |
 | R3 State path handling | Compliant | Loading, error, empty, success, and render-error paths are handled; `ErrorBoundary` wraps the dashboard. |
 | R4 Container/presentational separation | Compliant | `useFinancialData` owns fetching and state; dashboard components receive props. |

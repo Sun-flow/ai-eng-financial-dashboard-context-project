@@ -271,16 +271,16 @@
 | Category | ✅ Working | ❌ Broken | ⚠️ Unverified/Issues | 🔲 N/A |
 |----------|-----------|-----------|---------------------|--------|
 | Frontend imports | 23 | 0 | 0 | 0 |
-| Frontend packages | 28 | 0 | 0 | 0 |
+| Frontend packages | 25 | 0 | 3 (unused imports) | 0 |
 | Backend imports | 15 | 0 | 0 | 0 |
 | Backend packages | 5 (pinned) | 0 | 1 (debugpy compat) | 0 |
 | Config files | 10 | 0 | 0 | 0 |
 | Docker compose | 8 | 0 | 0 | 0 |
 | File cross-refs | 4 | 0 | 0 | 0 |
 | Tests | 39 total (15 backend + 24 frontend), all passing | 0 | 0 | 0 |
-| **TOTAL** | **132** | **0** | **1** | **0** |
+| **TOTAL** | **129** | **0** | **4** | **0** |
 
-### Health Score: 🟢 **GOOD** (132/133 connections verified working)
+### Health Score: 🟢 **GOOD** (129/133 connections verified working)
 
 The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. The remaining risks are:
 

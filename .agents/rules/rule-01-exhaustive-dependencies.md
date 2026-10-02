@@ -18,4 +18,4 @@ Transitive-only dependencies create fragile builds: relying on a package only be
 ## Supporting References
 - `backend/requirements.txt` – `pydantic==2.13.5` is pinned directly (previously only transitive via `fastapi`)
 - `backend/requirements.txt` / `backend/requirements-dev.txt` – no `pytest-cov` dependency is declared anywhere in the project
-- `frontend/package.json` – 28 total declared packages (7 dependencies + 21 devDependencies), all confirmed used in code or build config
+- `frontend/package.json` – 28 total declared packages (7 dependencies + 21 devDependencies); 25 confirmed used in code or build config, 3 (`class-variance-authority`, `autoprefixer`, `postcss`) are declared but never imported — leftovers from the shadcn/ui CLI init (see health-assessment.md ⚠️ rows)

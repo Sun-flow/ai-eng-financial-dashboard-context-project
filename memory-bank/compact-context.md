@@ -7,7 +7,7 @@
 
 - FastAPI + React/TypeScript dashboard.
 - Seeded in-memory data; checks pass.
-- Five rule gaps remain; Compose traffic is blocked by a paused host bridge issue.
+- Six rule gaps remain; Compose traffic is blocked by a paused host bridge issue.
 
 ## Verified
 
@@ -47,6 +47,6 @@ Backend: `cd backend && python -m pytest -q`; frontend: `cd frontend && npm test
 
 ## Next
 
-- Close R8, R13, R16, R17, R19 gaps in the assessment.
+- Close R1 (remove stale packages), R8, R13, R16, R17, R19 gaps in the assessment.
 - Synchronize memory bank after changes.
 - Defer database, production config, and bridge remediation until explicitly scoped.

@@ -8,8 +8,8 @@
 - **Frontend tooling**: Vite `^8.0.4`, Tailwind CSS `^4.2.2`, `@vitejs/plugin-react`
 - **Backend**: Python 3.13, FastAPI `0.141.1`, Uvicorn `0.53.0`, Pydantic `2.13.5`
 - **Charts and icons**: Recharts `^3.8.1`, Lucide React `^1.8.0`
-- **Frontend utilities**: `class-variance-authority`, `clsx`, and `tailwind-merge`
-- **Frontend CSS/build support**: PostCSS, Autoprefixer, Tailwind Vite integration
+- **Frontend utilities**: `clsx` and `tailwind-merge` (✅ actively imported); `class-variance-authority` (⚠️ declared as dependency but never imported — leftover from shadcn/ui CLI init)
+- **Frontend CSS/build support**: `@tailwindcss/vite` plugin handles CSS directly (✅); `postcss` and `autoprefixer` (⚠️ declared as devDependencies but unused — no PostCSS config exists)
 
 ## Testing and Quality Tooling
 
