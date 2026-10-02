@@ -1,12 +1,12 @@
 # Agent Rule Compliance Assessment
 
 > **Updated**: October 1, 2026
-> **Scope**: 22 rules in `.agents/rules/`
+> **Scope**: 23 rules in `.agents/rules/`
 > **Baseline**: implementation commit `6a839a8` plus current CI and dependency updates
 
 ## Summary
 
-16 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R22), 6 partial (R1, R8, R13, R16, R17, R19). 8 CI-enforced. Original assessment (`6b9e417`) obsolete; six gaps remain.
+17 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R23), 6 partial (R1, R8, R13, R16, R17, R19). 8 CI-enforced. Original assessment (`6b9e417`) obsolete; six gaps remain.
 
 ## Rule-by-Rule Evidence
 
@@ -34,6 +34,7 @@
 | R20 No hardcoded derivatives | Compliant | HTML title and dashboard period are meaningful or derived from data. |
 | R21 Consistent API parameter names | Compliant | Route decorators and function signatures use matching date parameter names. |
 | R22 Minimal build contexts | Compliant | Backend and frontend `.dockerignore` files exclude build and development artifacts. |
+| R23 Subagent model selection | Compliant | `task` tool calls specify `4geeks/downtown-miami/openrouter/deepseek/deepseek-v4-flash` per rule. |
 
 ## Enforcement Status
 

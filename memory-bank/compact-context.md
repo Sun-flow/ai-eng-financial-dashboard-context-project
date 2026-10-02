@@ -15,7 +15,7 @@ FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend te
 - `frontend/src/hooks/use-financial-data.ts`: fetch and async state
 - `frontend/src/lib/financial-utils.ts`: pure calculations and period labels
 - `docker-compose.yml`: service orchestration and health dependency
-- `.agents/rules/`: 22 repository rules
+- `.agents/rules/`: 23 repository rules
 - `memory-bank/agent-rule-compliance-assessment.md`: current rule audit
 
 ## Rule Conventions
