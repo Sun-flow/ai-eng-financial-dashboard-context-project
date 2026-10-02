@@ -5,8 +5,7 @@
 - Read-only executive dashboard for seeded mock income/outcome movements.
 - UI: KPI cards, monthly income-vs-outcome chart, monthly profit-margin chart.
 - No auth, persistence, database, writes, or production data integration.
-- API routes (9): `/health`; `/api/metrics`; `/api/metrics/facets`; `/api/metrics/summary`.
-- More routes: `/api/metrics/categories/top`; `/api/metrics/comparison`; `/api/metrics/alerts`; `/api/metrics/b2b`; `/api/metrics/b2c`.
+- 9 API routes: `/health`, `/api/metrics`, `/api/metrics/{facets,summary,categories/top,comparison,alerts,b2b,b2c}`.
 - Compose services start individually, but host bridge networking blocks inter-service traffic; local development is the workaround.
 
 ## Architecture and Data Flow
@@ -17,13 +16,10 @@
 
 ## Key Files
 
-- `backend/app/main.py`: FastAPI app, CORS middleware, and router inclusion
-- `backend/app/routes.py`: API models, route handlers, filtering, summaries, alerts, and mock generation
-- `backend/tests/`: shared TestClient fixture and endpoint tests
-- `frontend/src/App.tsx`: composition and error boundary
-- `frontend/src/hooks/use-financial-data.ts`: fetch, async state, and derived data
-- `frontend/src/components/dashboard/`: KPI and chart presentation
-- `frontend/src/lib/financial-utils.ts`: pure calculations and formatting
-- `docker-compose.yml`: service orchestration and health dependency
-
-**Evidence**: `backend/app/routes.py`; `frontend/src/`; `backend/requirements*.txt`; `frontend/package.json`; `.agents/rules/`.
+- `backend/app/routes.py` — 9 routes, Pydantic models, mock generation (`@lru_cache`), filters, alerts
+- `backend/app/main.py` — FastAPI app, CORS, router inclusion
+- `frontend/src/App.tsx` — composition root, error boundary wrapper
+- `frontend/src/hooks/use-financial-data.ts` — fetch + async state
+- `frontend/src/lib/financial-utils.ts` — pure calculations (KPIs, monthly data, formatting, period label)
+- `frontend/src/components/dashboard/` — KPI cards, income/outcome chart, profit chart
+- `docker-compose.yml` — service orchestration, health dependency, env vars

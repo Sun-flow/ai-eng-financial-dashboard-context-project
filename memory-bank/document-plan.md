@@ -28,15 +28,6 @@
 - `docs/planning.md`: staged improvement plan
 - `.agents/rules/`: repository development rules
 
-## Historical Context Retained
+## Historical Context
 
-The initial audit established these historical facts:
-
-- A previous Docker development target used `--reload` with a bind mount and entered a restart loop; the current Dockerfile removes that failure mode from the Compose target.
-- The Python slim image lacked `curl`, which caused the first healthcheck attempt to fail; the base image now installs it.
-- The frontend previously used a Docker-only proxy hostname, had a scaffold HTML title, mixed languages in an error message, and contained unused mock data. These were corrected.
-- Repository-map corrections: `rechats` -> `recharts`; `FinanciaMovement` -> `FinancialMovement`.
-- Earlier audit counts: backend tests 9 -> 16; mock data 57 -> 52.
-- `frontend/public/favicon.svg` was confirmed present.
-
-These historical details are retained here so future agents can understand why the current configuration exists without treating resolved issues as open work.
+Resolved issues preserved to explain current config without reopening them: `--reload` bind-mount restart loop (R13 gap), Python slim missing curl, Docker-only proxy hostname, `rechats`/`FinanciaMovement` typos, scaffold HTML title, unused mock data removal, favicon.svg presence.

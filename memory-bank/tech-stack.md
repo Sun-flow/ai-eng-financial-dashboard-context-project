@@ -1,43 +1,37 @@
 # Tech Stack and Dependencies
 
-> **Verified**: October 1, 2026 from the repository manifests and Dockerfiles.
+> **Verified**: October 1, 2026 from manifests and Dockerfiles.
 
-## Languages and Frameworks
+## Languages & Frameworks
 
-- **Frontend**: TypeScript `~6.0.2`, React `^19.2.4`, React DOM `^19.2.4`
-- **Frontend tooling**: Vite `^8.0.4`, Tailwind CSS `^4.2.2`, `@vitejs/plugin-react`
+- **Frontend**: TypeScript `~6.0.2`, React `^19.2.4`, Vite `^8.0.4`, Tailwind CSS `^4.2.2`, Recharts `^3.8.1`, Lucide React `^1.8.0`
 - **Backend**: Python 3.13, FastAPI `0.141.1`, Uvicorn `0.53.0`, Pydantic `2.13.5`
-- **Charts and icons**: Recharts `^3.8.1`, Lucide React `^1.8.0`
-- **Frontend utilities**: `clsx` and `tailwind-merge` (✅ actively imported); `class-variance-authority` (⚠️ declared as dependency but never imported — leftover from shadcn/ui CLI init)
-- **Frontend CSS/build support**: `@tailwindcss/vite` plugin handles CSS directly (✅); `postcss` and `autoprefixer` (⚠️ declared as devDependencies but unused — no PostCSS config exists)
+- **Container**: `python:3.13-slim` (backend), `node:24-alpine` / `nginx:alpine` (frontend)
 
-## Testing and Quality Tooling
+## Dependencies
 
-- **Backend**: pytest `9.1.1`, FastAPI TestClient, httpx `0.28.1`
-- **Frontend**: Vitest `^4.1.4`, Testing Library React `^16.3.3`, jest-dom `^7.0.1`, jsdom `^30.1.1`
-- **Lint/build**: ESLint `^9.39.4`, TypeScript project build, Vite production build
-- **Debugging**: debugpy `1.8.22` in development requirements only
+- **28 frontend packages** (7 deps + 21 devDeps). 3 are unused: `class-variance-authority`, `autoprefixer`, `postcss` — leftovers from shadcn/ui CLI init, no PostCSS config exists.
+- **Backend runtime**: `fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, `pydantic==2.13.5`
+- **Backend dev**: `debugpy==1.8.22`, `pytest==9.1.1`, `httpx==0.28.1`
+- Lockfiles: `requirements.lock` (full Python freeze), `package-lock.json` (npm)
 
-## Infrastructure, Locking, CI
+## Testing & CI
 
-- Compose orchestrates services; both Dockerfiles have dev/prod targets.
-- Images: backend `python:3.13-slim`; frontend dev/build `node:24-alpine`; frontend prod `nginx:alpine`.
-- Backend: runtime `requirements.txt`; dev/test `requirements-dev.txt`; full Python 3.13 lock `requirements.lock`.
-- Frontend: `package.json` + `package-lock.json`.
-- Tracked `.github/workflows/ci.yml`: Python 3.13/Node 24; backend tests; frontend lint, tests, build.
+- **Backend**: pytest + FastAPI TestClient — 15 tests
+- **Frontend**: Vitest + Testing Library + jest-dom — 24 tests
+- **Lint**: ESLint `^9.39.4` (flat config)
+- **CI**: `.github/workflows/ci.yml` — Python 3.13, Node 24; backend tests, frontend lint/tests/build on push/PR to main
 
 ## Configuration
 
-- `VITE_API_PROXY_TARGET`: `/api` proxy; local `http://localhost:8000`, Compose `http://backend:8000`.
-- `VITE_API_BASE_URL`: optional frontend API prefix; default same origin.
-- `CORS_ORIGINS`: comma-separated origins; default `*`, Compose `http://localhost:5173`.
+- `VITE_API_PROXY_TARGET`: Vite `/api` proxy target (default `http://localhost:8000`)
+- `VITE_API_BASE_URL`: optional frontend API base URL override
+- `CORS_ORIGINS`: comma-separated allowed origins (default `*`, Compose sets `http://localhost:5173`)
 
-## Development Commands
+## Commands
 
-```text
+```
 cd backend && python -m pytest -q
 cd frontend && npm test
 cd frontend && npm run lint && npm run build
 ```
-
-Local: Uvicorn 8000 + Vite 5173; proxy defaults to local backend. Compose is usable for image/orchestration checks, not service traffic, until the bridge issue is resolved.

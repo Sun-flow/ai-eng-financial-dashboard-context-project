@@ -6,14 +6,7 @@
 
 ## Summary
 
-| Status | Count | Rules |
-|---|---:|---|
-| Compliant in source | 16 | R2-R7, R9-R12, R14-R15, R18, R20-R22 |
-| Partial or open coverage | 6 | R1, R8, R13, R16, R17, R19 |
-| CI-enforced directly or indirectly | 8 | R1, R3, R14, R15, R16, R17, R19, R22 |
-| Documentation-only assessment gaps | 0 | Assessment reflects the live repo |
-
-Original assessment: commit `6b9e417`, pre-implementation. Its "13 needs fix" result is obsolete; six gaps remain.
+16 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R22), 6 partial (R1, R8, R13, R16, R17, R19). 8 CI-enforced. Original assessment (`6b9e417`) obsolete; six gaps remain.
 
 ## Rule-by-Rule Evidence
 

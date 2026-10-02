@@ -5,13 +5,7 @@
 
 ## State
 
-- FastAPI + React/TypeScript dashboard.
-- Seeded in-memory data; checks pass.
-- Six rule gaps remain; Compose traffic is blocked by a paused host bridge issue.
-
-## Verified
-
-9 routes, 360 movements, 15 backend tests, 24 frontend tests, and passing ESLint, TypeScript build, and Vite production build.
+FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend tests, 24 frontend tests, passing ESLint/TypeScript/Vite build. Six rule gaps remain; Compose bridge traffic blocked (#10).
 
 ## Key Files
 
