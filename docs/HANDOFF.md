@@ -42,7 +42,7 @@
 - Healthcheck + `depends_on: condition: service_healthy` in `docker-compose.yml`.
 - `.dockerignore` for both services.
 - `docs/operational-blockers.md`, `docs/planning.md`, `docs/CHANGELOG.md`, `docs/conventions.md`, `docs/development-rules.md`, `docs/health-assessment.md`, `docs/project-map.md`.
-- `.agents/rules/` (22 rules) + `memory-bank/` (6 files).
+- `.agents/rules/` (23 rules) + `memory-bank/` (6 files).
 
 ---
 
@@ -156,7 +156,7 @@ frontend/
     lib/ financial-types.ts, financial-utils.ts (+ test), utils.ts
 docs/                        # planning, blockers, changelog, conventions, dev-rules...
 memory-bank/                 # project-overview, current-status, tech-stack, doc-plan, compact-context, rule-assess
-.agents/rules/               # 22 numbered rules (binding)
+.agents/rules/               # 23 numbered rules (binding)
 docker-compose.yml
 ```
 
