@@ -30,4 +30,11 @@
 
 ## Historical Context
 
-Resolved issues preserved to explain current config without reopening them: `--reload` bind-mount restart loop (R13 gap), Python slim missing curl, Docker-only proxy hostname, `rechats`/`FinanciaMovement` typos, scaffold HTML title, unused mock data removal, favicon.svg presence.
+Resolved issues preserved to explain current config (see `docs/operational-blockers.md` for details):
+- **#2** — Proxy target changed from Docker-only `backend:8000` to env-configurable defaulting to `localhost:8000`
+- **#4** — `python:3.13-slim` lacked curl for healthchecks; added to base stage
+- **#6** — Missing favicon added to `frontend/public/`
+- **#7** — Generic `<title>frontend</title>` changed to "Financial Dashboard"
+- **#8** — Unused `mock-data.ts` deleted
+
+**R13 (no `--reload`)** is an intentional deviation, not a resolved issue — see `agent-rule-compliance-assessment.md`. Development omits `--reload` to avoid the Docker bind-mount restart loop, but the dev/prod separation rule remains partially open.

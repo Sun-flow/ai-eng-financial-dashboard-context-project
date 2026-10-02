@@ -1,12 +1,12 @@
 # Agent Rule Compliance Assessment
 
-> **Updated**: October 1, 2026
+> **Updated**: October 2, 2026
 > **Scope**: 23 rules in `.agents/rules/`
 > **Baseline**: implementation commit `6a839a8` plus current CI and dependency updates
 
 ## Summary
 
-17 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R23), 6 partial (R1, R8, R13, R16, R17, R19). 8 CI-enforced. Original assessment (`6b9e417`) obsolete; six gaps remain.
+17 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R23), 6 partial (R1, R8, R13, R16, R17, R19). Original assessment (`6b9e417`) obsolete; six gaps remain.
 
 ## Rule-by-Rule Evidence
 
@@ -45,7 +45,18 @@ The CI workflow in `.github/workflows/ci.yml` now:
 - runs frontend ESLint, Vitest, and the production build;
 - uses committed lockfiles for pip and npm caching.
 
-CI enforces dependency integrity, tests, lint, and builds. Naming, import aliases, chart colors, and pure transformations remain review-audited.
+CI enforces dependency integrity ✅, tests ✅ (backend + frontend), lint ✅, and builds ✅. Naming, import aliases, chart colors, and pure transformations remain review-audited.
+
+### CI-enforced rules
+| Rule | How CI enforces it |
+|------|--------------------|
+| R3 State path handling | Tests assert loading/error/empty render paths |
+| R14 Pinned Python deps | CI installs from `requirements.lock` |
+| R15 Backend TestClient | Tests use shared `TestClient` fixture |
+| R16 Frontend utility tests | Vitest runs as `npm test` in CI |
+| R17 Component render tests | Vitest runs as `npm test` in CI |
+| R19 No dead code | Build would fail if dead-code removal broke compilation; `mock-data.ts` and `user-event` removed independently |
+| R22 Minimal build contexts | CI uses `npm ci` which respects lockfile; `.dockerignore` prevents context bloat |
 
 ## Known Non-Rule Blocker
 
@@ -56,4 +67,4 @@ Docker networking is paused; details: `docs/CHANGELOG.md`, `docs/operational-blo
 - Backend: 15 tests passed on the Python 3.13 target.
 - Frontend: 24 Vitest tests passed.
 - TypeScript build: passed.
-- ESLint: passed for changed files and is configured in CI for the full frontend.
+- ESLint: passes in CI across the full frontend (`eslint .`).

@@ -1,6 +1,6 @@
 # Current Status and Known Gaps
 
-> **Updated**: October 1, 2026
+> **Updated**: October 2, 2026
 
 ## What Works
 
@@ -17,5 +17,5 @@
 
 ## Next Priorities
 
-1. Close rule gaps: remove stale deps (R1), fix chart colors (R8), add missing tests (R16/R17).
+1. Close rule gaps: remove stale deps (R1), fix chart colors (R8), add missing tests (R16/R17), decide on hero.png (R19), reconcile R13 deviation.
 2. Defer bridge and production config until explicitly scoped.
