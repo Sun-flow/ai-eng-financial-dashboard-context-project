@@ -47,7 +47,6 @@ ai-eng-financial-dashboard-context-project/
 │       ├── main.tsx             # React entry point
 │       ├── test-setup.ts        # Vitest setup: jest-dom matchers
 │       ├── assets/
-│       │   └── hero.png         # Hero image (⚠️ appears unreferenced — see Rule 19)
 │       ├── components/
 │       │   ├── error-boundary.tsx        # ErrorBoundary wrapping Dashboard
 │       │   ├── error-boundary.test.tsx   # 3 tests (normal, catch+fallback, custom fallback)
@@ -408,7 +407,6 @@ Both sides share the same domain concepts but **types are duplicated manually** 
 │       ├── main.tsx
 │       ├── test-setup.ts
 │       ├── assets/
-│       │   └── hero.png
 │       ├── hooks/
 │       │   └── use-financial-data.ts
 │       ├── components/

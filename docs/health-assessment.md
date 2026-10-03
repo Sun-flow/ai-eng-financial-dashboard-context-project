@@ -282,10 +282,7 @@
 
 ### Health Score: 🟢 **GOOD** (129/133 connections verified working)
 
-The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. The remaining risks are:
+The codebase has strong internal consistency — virtually all imports, dependencies, and references resolve correctly. All 23 agent rules are now compliant. The remaining risks are:
 
 1. **🔴 Docker bridge networking (paused)** — inter-container routing times out in both directions; workaround is running locally
 2. **⚠️ debugpy + Python 3.13 compatibility** — not separately verified
-3. **⚠️ Charts use blue/orange oklch hues instead of green/red semantic (Rule 8)**
-4. **⚠️ `utils.ts`, `KPIRow`, `Card`, `Skeleton` lack dedicated tests**
-5. **⚠️ `hero.png` appears unreferenced (Rule 19)**

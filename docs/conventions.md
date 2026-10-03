@@ -326,8 +326,4 @@ These are not fully implemented and would need to be established for collaborati
 - ✅ Pinned Python dependency versions
 
 ### Areas for Improvement
-- ⚠️ Chart colors use blue/orange (oklch) instead of green/red semantic — violates Rule 8
-- ⚠️ `utils.ts` has no dedicated utility test — violates Rule 16
-- ⚠️ `KPIRow`, `Card`, and `Skeleton` have no render tests
-- ⚠️ `frontend/src/assets/hero.png` appears unreferenced — needs intentional-use decision (Rule 19)
 - ⚠️ Docker bridge networking (#10) times out in both directions (paused)

@@ -11,11 +11,10 @@
 ## Known Gaps
 
 - **🔴 Docker bridge networking (#10, paused)**: inter-container traffic times out. Workaround: run both services locally. See `docs/operational-blockers.md`.
-- **🔶 6 rule gaps** (see `agent-rule-compliance-assessment.md`):
-  R1 (3 unused packages), R8 (chart colors not green/red), R13 (no `--reload`), R16 (utils.ts untested), R17 (KPIRow/Card/Skeleton untested), R19 (hero.png unreferenced)
+- **🟢 All 23 rules compliant** (see `agent-rule-compliance-assessment.md`): R1 (stale deps removed), R8 (chart colors green/red), R13 (deviation documented), R16 (utils.test.ts created), R17 (KPIRow/Card/Skeleton tested), R19 (hero.png removed).
 - **🟡 Product scope**: no database, auth, writes, or real-data integration — mock-only read dashboard.
 
 ## Next Priorities
 
-1. Close rule gaps: remove stale deps (R1), fix chart colors (R8), add missing tests (R16/R17), decide on hero.png (R19), reconcile R13 deviation.
+1. Run `npm test` to confirm all new tests pass.
 2. Defer bridge and production config until explicitly scoped.

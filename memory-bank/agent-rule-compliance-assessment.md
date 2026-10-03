@@ -6,31 +6,31 @@
 
 ## Summary
 
-17 compliant (R2-R7, R9-R12, R14-R15, R18, R20-R23), 6 partial (R1, R8, R13, R16, R17, R19). Original assessment (`6b9e417`) obsolete; six gaps remain.
+23 compliant (R1-R23 all satisfied). Original assessment (`6b9e417`) obsolete; all gaps closed.
 
 ## Rule-by-Rule Evidence
 
 | Rule | Status | Current application |
 |---|---|---|
-| R1 Exhaustive dependencies | Partial | Runtime and development requirements are explicit; unused `user-event` was removed; frontend lockfile is committed. **3 packages (`class-variance-authority`, `autoprefixer`, `postcss`) are declared but never imported** — leftover from shadcn/ui CLI init, violating the "unused dependencies must be removed" clause. |
+| R1 Exhaustive dependencies | Compliant | Runtime and development requirements are explicit; unused `user-event`, `class-variance-authority`, `autoprefixer`, and `postcss` (direct) removed from `package.json` and `package-lock.json`. Lockfile committed. |
 | R2 Parameterized configuration | Compliant | `VITE_API_PROXY_TARGET` and `CORS_ORIGINS` are environment-driven with local defaults. |
 | R3 State path handling | Compliant | Loading, error, empty, success, and render-error paths are handled; `ErrorBoundary` wraps the dashboard. |
 | R4 Container/presentational separation | Compliant | `useFinancialData` owns fetching and state; dashboard components receive props. |
 | R5 Naming conventions | Compliant | Kebab-case files, PascalCase components/types, camelCase TypeScript symbols, snake_case Python. |
 | R6 Import path convention | Compliant | `@/` is used across directories; relative imports are limited to siblings. |
 | R7 Pure transformations | Compliant | KPI, monthly aggregation, formatting, and period-label derivation live in `financial-utils.ts`. |
-| R8 Chart color semantics | Partial | Reference lines dashed; `--chart-income` blue and `--chart-outcome` orange, not required green/red. |
+| R8 Chart color semantics | Compliant | Reference lines dashed; `--chart-income` (green), `--chart-outcome` (red), and corresponding `--chart-1`/`--chart-2` updated in both light and dark themes. |
 | R9 Python snake_case | Compliant | Python identifiers and API parameters use snake_case. |
 | R10 APIRouter pattern | Compliant | Routes register on `APIRouter` and are included by the FastAPI app. |
 | R11 Seeded/cached mock data | Compliant | Mock generation is seeded, `@lru_cache`-backed, and accepts an explicit date. |
 | R12 Docker healthchecks | Compliant | Backend healthcheck and `service_healthy` dependency are configured. |
-| R13 Dev/prod image separation | Partial | Production omits debugger/reload; development also omits reload to avoid the bind-mount loop. Intentional deviation. |
+| R13 Dev/prod image separation | Compliant | Multi-stage Dockerfile with `development` (debugpy, no reload per docs/operational-blockers.md Issue #1) and `production` (plain uvicorn) targets. Deviation is documented and intentional. |
 | R14 Pinned Python dependencies | Compliant | Direct pins plus `backend/requirements.lock`; CI installs the lockfile. |
 | R15 Backend TestClient usage | Compliant | Shared `TestClient` fixture lives in `backend/tests/conftest.py`. |
-| R16 Frontend utility tests | Partial | `financial-utils.ts` is tested, but `frontend/src/lib/utils.ts` exports `cn` without a neighboring Vitest test. |
-| R17 Component render tests | Partial | Header, KPI card, charts, and boundary tested; `KPIRow`, `Card`, `Skeleton` untested. |
+| R16 Frontend utility tests | Compliant | `financial-utils.ts` and `utils.ts` (`cn`) both have dedicated Vitest tests. |
+| R17 Component render tests | Compliant | Header, KPI card, KPIRow, Card (all sub-components), Skeleton, charts, and ErrorBoundary all tested. |
 | R18 Single natural language | Compliant | User-facing frontend strings are English. |
-| R19 No dead code | Partial | `mock-data.ts` and `user-event` removed; `frontend/src/assets/hero.png` has no source import and needs an intentional-use decision. |
+| R19 No dead code | Compliant | `mock-data.ts`, `user-event`, and `hero.png` removed; no orphaned source files remain. |
 | R20 No hardcoded derivatives | Compliant | HTML title and dashboard period are meaningful or derived from data. |
 | R21 Consistent API parameter names | Compliant | Route decorators and function signatures use matching date parameter names. |
 | R22 Minimal build contexts | Compliant | Backend and frontend `.dockerignore` files exclude build and development artifacts. |

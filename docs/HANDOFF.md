@@ -166,7 +166,7 @@ docker-compose.yml
 
 - **Rule 4**: side effects only in container (App/hook); presentational components pure (props only).
 - **Rule 7**: transformations are pure functions (`computeKPIs`, `computeMonthlyData`).
-- **Rule 8**: charts should use green = income, red = outcome. **⚠️ Known gap**: current implementation uses `--chart-income`/`--chart-outcome` oklch hues (blue/orange), not green/red — not yet fixed.
+- **Rule 8**: charts should use green = income, red = outcome. **✅ Resolved**: `--chart-income`/`--chart-1` (green oklch) and `--chart-outcome`/`--chart-2` (red oklch) updated in both light/dark themes.
 - **Rule 9**: snake_case Python, camelCase TS, kebab-case files, PascalCase components.
 - **Rule 11**: mock data seeded + cached (`@lru_cache`), never per-request.
 - **Rule 12/13**: healthchecks required; dev/prod image separation.

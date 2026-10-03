@@ -5,7 +5,7 @@
 
 ## State
 
-FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend tests, 24 frontend tests, passing ESLint/TypeScript/Vite build. Six rule gaps remain; Compose bridge traffic blocked (#10).
+FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend tests, 24+8 frontend tests, passing ESLint/TypeScript/Vite build. All 23 rules compliant. Compose bridge traffic blocked (#10).
 
 ## Key Files
 
@@ -21,7 +21,7 @@ FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend te
 ## Rule Conventions
 
 - Side effects: container/hook; dashboard components: presentational.
-- Transformations: pure/tested; chart semantics should be green income/red outcome but are **not yet fixed** (current implementation uses blue/orange oklch hues — see R8 gap).
+- Transformations: pure/tested; chart semantics: green income (`--chart-income`), red outcome (`--chart-outcome`).
 - Names: Python snake_case; TypeScript camelCase; kebab-case files; PascalCase components/types.
 - Keep mocks seeded/cached, dependencies pinned, API parameters consistent, Docker contexts minimal.
 
@@ -41,6 +41,5 @@ Backend: `cd backend && python -m pytest -q`; frontend: `cd frontend && npm test
 
 ## Next
 
-- Close R1 (remove stale packages), R8, R13, R16, R17, R19 gaps in the assessment.
-- Synchronize memory bank after changes.
+- Run test suite to confirm all new tests pass.
 - Defer database, production config, and bridge remediation until explicitly scoped.

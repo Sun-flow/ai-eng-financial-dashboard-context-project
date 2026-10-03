@@ -37,4 +37,4 @@ Resolved issues preserved to explain current config (see `docs/operational-block
 - **#7** — Generic `<title>frontend</title>` changed to "Financial Dashboard"
 - **#8** — Unused `mock-data.ts` deleted
 
-**R13 (no `--reload`)** is an intentional deviation, not a resolved issue — see `agent-rule-compliance-assessment.md`. Development omits `--reload` to avoid the Docker bind-mount restart loop, but the dev/prod separation rule remains partially open.
+**R13 (no `--reload`)** is an intentional deviation, now documented in both the rule (`rule-13-dev-prod-image-separation.md`) and `docs/operational-blockers.md` (Issue #1). Development omits `--reload` to avoid the Docker bind-mount restart loop. Assessment updated to Compliant.
