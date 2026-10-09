@@ -1,6 +1,6 @@
 # Agent Rule Compliance Assessment
 
-> **Updated**: October 2, 2026
+> **Updated**: October 9, 2026
 > **Scope**: 23 rules in `.agents/rules/`
 > **Baseline**: implementation commit `6a839a8` plus current CI and dependency updates
 
@@ -65,6 +65,6 @@ Docker networking is paused; details: `docs/CHANGELOG.md`, `docs/operational-blo
 ## Validation
 
 - Backend: 15 tests passed on the Python 3.13 target.
-- Frontend: 24 Vitest tests passed.
+- Frontend: 56 Vitest tests passed (10 test files).
 - TypeScript build: passed.
 - ESLint: passes in CI across the full frontend (`eslint .`).

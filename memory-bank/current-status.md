@@ -1,11 +1,11 @@
 # Current Status and Known Gaps
 
-> **Updated**: October 2, 2026
+> **Updated**: October 9, 2026
 
 ## What Works
 
 - 9 FastAPI routes, 360 cached mock movements, KPI + chart components with loading/error/empty states.
-- 15 backend tests, 24 frontend tests, ESLint + TypeScript + Vite build all passing.
+- 15 backend tests, 56 frontend tests (10 test files), ESLint + TypeScript + Vite build all passing.
 - Multi-stage Docker, env-driven CORS/proxy, health dependency, `.dockerignore` files.
 
 ## Known Gaps

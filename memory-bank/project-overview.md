@@ -2,7 +2,7 @@
 
 ## Product and Boundary
 
-- Read-only executive dashboard for seeded mock income/outcome movements.
+- Read-only executive dashboard for seeded mock income/outcome movements (seed=42, `@lru_cache`-backed for deterministic repeatability).
 - UI: KPI cards, monthly income-vs-outcome chart, monthly profit-margin chart.
 - No auth, persistence, database, writes, or production data integration.
 - 9 API routes: `/health`, `/api/metrics`, `/api/metrics/{facets,summary,categories/top,comparison,alerts,b2b,b2c}`.
@@ -11,7 +11,7 @@
 ## Architecture and Data Flow
 
 - Flow: `useFinancialData` fetches `/api/metrics` -> pure utilities derive KPIs/months/formatting/period -> `App.tsx` passes state to presentational components.
-- Backend: `APIRouter` + Pydantic contracts + cached deterministic mocks.
+- Backend: `APIRouter` + Pydantic contracts + cached deterministic mocks (seed=42, `@lru_cache`).
 - Frontend: component composition; no global state library.
 
 ## Key Files

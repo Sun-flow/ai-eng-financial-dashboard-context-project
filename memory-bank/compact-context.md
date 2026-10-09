@@ -1,11 +1,11 @@
 # Compact Context - Financial Dashboard
 
-> **Updated**: October 2, 2026
+> **Updated**: October 9, 2026
 > **Details**: `docs/HANDOFF.md`, `docs/CHANGELOG.md`, `docs/operational-blockers.md`, `memory-bank/current-status.md`.
 
 ## State
 
-FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend tests, 24+8 frontend tests, passing ESLint/TypeScript/Vite build. All 23 rules compliant. Compose bridge traffic blocked (#10).
+FastAPI + React/TypeScript dashboard with 9 routes, 360 movements, 15 backend tests, 56 frontend tests (10 files), passing ESLint/TypeScript/Vite build. All 23 rules compliant. Compose bridge traffic blocked (#10).
 
 ## Key Files
 

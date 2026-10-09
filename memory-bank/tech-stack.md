@@ -18,7 +18,7 @@
 ## Testing & CI
 
 - **Backend**: pytest + FastAPI TestClient — 15 tests
-- **Frontend**: Vitest + Testing Library + jest-dom — 24 tests
+- **Frontend**: Vitest + Testing Library + jest-dom — 56 tests (10 test files)
 - **Lint**: ESLint `^9.39.4` (flat config)
 - **CI**: `.github/workflows/ci.yml` — Python 3.13, Node 24; backend tests, frontend lint/tests/build on push/PR to main
 

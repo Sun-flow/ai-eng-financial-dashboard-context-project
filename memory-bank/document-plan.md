@@ -11,6 +11,19 @@
 | `document-plan.md` | Inventory and maintenance guidance for this memory bank | Current |
 | `agent-rule-compliance-assessment.md` | Rule-by-rule compliance evidence against `.agents/rules/` | Complete |
 
+## Related Repository Documents — `docs/`
+
+| File | Purpose | Status |
+|---|---|---|
+| `docs/project-map.md` | Full repository structure, architecture overview, and component map | ✅ Complete |
+| `docs/CHANGELOG.md` | Implementation history, validation notes, and deferred issues | ✅ Complete |
+| `docs/HANDOFF.md` | Detailed engineering handoff for the next engineer | ✅ Complete |
+| `docs/conventions.md` | Established patterns, conventions, and anti-patterns in the codebase | ✅ Complete |
+| `docs/development-rules.md` | Axiom-like development rules grounded in repo facts | ✅ Complete |
+| `docs/health-assessment.md` | Manual audit of all files — imports, references, connections, dependencies | ✅ Complete |
+| `docs/planning.md` | Staged improvement plan with completion status per task | ✅ Complete |
+| `docs/operational-blockers.md` | Docker and operational issues, with priority markings | ✅ Complete |
+
 ## Maintenance Rules
 
 - Update `current-status.md` whenever a blocker, test result, or priority changes.
@@ -19,14 +32,8 @@
 - Keep `compact-context.md` concise and consistent with the detailed documents.
 - Record dates for state snapshots; do not preserve superseded claims as current facts.
 - Do not duplicate long implementation plans here; link to `docs/planning.md` and `docs/HANDOFF.md`.
-
-## Related Repository Documents
-
-- `docs/HANDOFF.md`: detailed engineering handoff
-- `docs/CHANGELOG.md`: implementation history and validation notes
-- `docs/operational-blockers.md`: Docker and operational investigations
-- `docs/planning.md`: staged improvement plan
-- `.agents/rules/`: repository development rules
+- Refresh this inventory whenever a `docs/` or `memory-bank/` file is added or removed.
+- On each major session start, verify that the file listings above match the actual filesystem.
 
 ## Historical Context
 
