@@ -13,16 +13,14 @@
 
 ## Related Repository Documents — `docs/`
 
+Working directory for temporary agent scratch, research aggregation, transient analysis (plans, summaries, comparisons), reports, etc. Ingest relevant long-term info into `memory-bank/` during handoff; stable content belongs in `memory-bank/` and `.agents/rules/`.
+
+### Currently Active Files
+
 | File | Purpose | Status |
 |---|---|---|
-| `docs/project-map.md` | Full repository structure, architecture overview, and component map | ✅ Complete |
-| `docs/CHANGELOG.md` | Implementation history, validation notes, and deferred issues | ✅ Complete |
-| `docs/HANDOFF.md` | Detailed engineering handoff for the next engineer | ✅ Complete |
-| `docs/conventions.md` | Established patterns, conventions, and anti-patterns in the codebase | ✅ Complete |
-| `docs/development-rules.md` | Axiom-like development rules grounded in repo facts | ✅ Complete |
-| `docs/health-assessment.md` | Manual audit of all files — imports, references, connections, dependencies | ✅ Complete |
-| `docs/planning.md` | Staged improvement plan with completion status per task | ✅ Complete |
-| `docs/operational-blockers.md` | Docker and operational issues, with priority markings | ✅ Complete |
+| `docs/operational-blockers.md` | Docker inter-container networking diagnostic (#10) | ✅ Active |
+| `docs/milestone-deliverables-assessment.md` | Deliverable verification report (milestone conclusion) | ✅ Active |
 
 ## Maintenance Rules
 
@@ -31,7 +29,7 @@
 - Keep `project-overview.md` grounded in source paths and observable product behavior.
 - Keep `compact-context.md` concise and consistent with the detailed documents.
 - Record dates for state snapshots; do not preserve superseded claims as current facts.
-- Do not duplicate long implementation plans here; link to `docs/planning.md` and `docs/HANDOFF.md`.
+- **Keep `docs/` lean**: agents will build plans/implemnentation proposals/research/reports here for their own temporary usage — ingest long-term (memory-bank) relevant findings into `memory-bank/` during handoff, then clean up.
 - Refresh this inventory whenever a `docs/` or `memory-bank/` file is added or removed.
 - On each major session start, verify that the file listings above match the actual filesystem.
 
