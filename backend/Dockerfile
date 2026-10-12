@@ -22,7 +22,7 @@ EXPOSE 8000 5678
 
 # NOTE: `--reload` is intentionally omitted. Combined with the bind-mount
 # volume in docker-compose.yml, Python's __pycache__/.pyc writes trigger an
-# infinite uvicorn restart loop. See docs/operational-blockers.md (Issue #1).
+# infinite uvicorn restart loop. See memory-bank/operational-blockers.md (Issue #1).
 CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 FROM base AS production

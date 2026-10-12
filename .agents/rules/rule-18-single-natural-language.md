@@ -16,5 +16,5 @@ Mixed-language interfaces confuse users and signal inconsistency in the product.
 - Internal-only strings (console logs, comments, variable names) are exempt.
 
 ## Supporting References
-- `docs/operational-blockers.md` – Issue #9: Spanish error message in `App.tsx` corrected, marked ✅ FIXED
+- `memory-bank/operational-blockers.md` – Issue #9: Spanish error message (originally in `App.tsx`, now English text in the hook) corrected, marked ✅ FIXED
 - `frontend/src/hooks/use-financial-data.ts` – current English error message

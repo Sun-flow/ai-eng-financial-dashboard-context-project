@@ -16,6 +16,5 @@ Pure functions — deterministic, side-effect-free, with no state access — are
 - Functions must not reference React state, props, or hooks.
 
 ## Supporting References
-- `docs/project-map.md` – Data Flow section: `computeKPIs` and `computeMonthlyData` called between fetch and render
-- `docs/conventions.md` – §1.3: Data flow pattern: Fetch → Transform → Render
-- `docs/health-assessment.md` – Frontend tests: 3 Vitest tests for these two functions (2 for `computeKPIs`, 1 for `computeMonthlyData`), part of 9 total in `financial-utils.test.ts`
+- `frontend/src/hooks/use-financial-data.ts` – Fetch → Transform → Render: `computeKPIs(data)` (setMetrics) and `computeMonthlyData(data)` (setMonthlyData) called between fetch and render
+- `frontend/src/lib/financial-utils.test.ts` – 9 tests across 4 `describe` blocks (`computeKPIs`, `computeMonthlyData`, `formatters`, `computePeriodLabel`)

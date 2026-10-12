@@ -16,7 +16,7 @@ The `@/` alias (mapped to `./src` in both `tsconfig.app.json` and `vite.config.t
 - Never use `../../` style relative imports for cross-directory references.
 
 ## Supporting References
-- `docs/health-assessment.md` – Component Imports table: sibling import `./kpi-card`
-- `docs/health-assessment.md` – Component Imports table: cross-directory imports via `@/`
-- `docs/project-map.md` – Vite Config: `resolve.alias` maps `@` → `./src`
-- `docs/project-map.md` – TypeScript Config: paths `@/*` → `./src/*`
+- `frontend/vite.config.ts` – `resolve.alias` maps `@` → `./src`
+- `frontend/tsconfig.app.json` – `paths` maps `@/*` → `./src/*`
+- `frontend/src/components/dashboard/kpi-card.tsx` – sibling import `./kpi-card` (relative within directory) and cross-directory imports via `@/components/ui/skeleton`
+- `frontend/src/hooks/use-financial-data.ts` – cross-directory imports via `@/lib/...`

@@ -16,6 +16,5 @@ Separating data-fetching (containers) from rendering (presentational components)
 - Extract complex data logic into custom hooks (`useFinancialData`, etc.) but keep them at the container level, not inside presentational components.
 
 ## Supporting References
-- `docs/conventions.md` – §1.1: `useFinancialData` hook owns all state; `App.tsx` destructures and passes down as props
-- `docs/project-map.md` – Component Tree: all 5 dashboard components receive data via props
 - `frontend/src/hooks/use-financial-data.ts` – `fetchFinancialData` and all `useState` calls live inside the hook, not in `App.tsx`
+- `frontend/src/App.tsx` – `useFinancialData()` hook owns all state; `Dashboard` derives `periodLabel` and passes data down as props to the dashboard components

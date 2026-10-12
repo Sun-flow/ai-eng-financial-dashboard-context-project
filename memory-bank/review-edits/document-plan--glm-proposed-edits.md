@@ -1,4 +1,7 @@
 # Review: `memory-bank/document-plan.md`
+
+> **Archival note**: This is a snapshot of the review as-of October 9, 2026. The `docs/` paths it references (`docs/operational-blockers.md`, `docs/planning.md`, etc.) were subsequently consolidated into `memory-bank/` (commit `f0d3b60`). Treat path claims here as historical, not current.
+
 **Verdict: FAIL** ⚠️ — Historical Context section has inaccuracies.
 
 ## Findings

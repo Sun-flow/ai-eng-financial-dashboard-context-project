@@ -12,11 +12,13 @@
 
 **Symptom:** `docker compose up` starts both containers and the backend reports `Healthy`, but the **frontend UI loads forever** (never receives `/api/metrics` data).
 
-**Root cause (diagnosed):** Frontend ↔ backend containers **cannot route to each other** over the compose bridge network, verified in both directions:
+**Observed failure (diagnosed); underlying cause unknown:** Frontend ↔ backend containers **cannot route to each other** over the compose bridge network, verified in both directions:
 - Frontend container → `backend:8000` and backend IP `172.18.0.2:8000` → **time out**
 - Backend container → frontend IP `172.18.0.3:5173` → **time out**
-- Each container reaches its own loopback and own IP fine; all services healthy individually → the break is purely inter-container routing.
-- `ip_forward=1`; network has no special options (`internal=false`); ICC not disabled; yet traffic is blocked. Suspected host/DinD-level firewall (`iptables` not inspectable without root) or nested-Docker bridge breakage.
+- Each container reaches its own loopback and own IP fine; the backend reports healthy via its `/health` check, and the frontend responds locally, but Compose has no frontend healthcheck → the break is purely inter-container routing.
+- `ip_forward=1`; network has no special options (`internal=false`); ICC not disabled; yet traffic is blocked. **Suspected** (hypothesis, not confirmed) host/DinD-level firewall (`iptables` not inspectable without root) or nested-Docker bridge breakage.
+
+> **Note:** These diagnostics were captured on a prior session (blocker first identified September 23, 2026). At review time (October 12, 2026) the containers are stopped, so this entry records dated historical diagnostics plus the configuration, not a live reproduction of the failure.
 
 **Tried without success:** `docker compose down` → `docker network prune -f` → `docker compose up -d` (fresh network + containers). Cross-container timeouts persisted.
 
@@ -33,11 +35,11 @@
 FROM python:3.13-slim
 ```
 
-**Problem:** Python 3.13 introduced significant CPython internals changes (PEP 703 free-threaded mode groundwork, JIT compiler work). `debugpy` is a debugger that hooks deep into CPython. If the installed `debugpy==1.8.22` doesn't fully support Python 3.13, it could crash on import or fail to attach, taking down the container.
+**Problem:** The `development` Docker target runs uvicorn wrapped by `debugpy` inside `python:3.13-slim` (`debugpy==1.8.22`). `debugpy` hooks deep into CPython, and the Python 3.13 dev-container launch/attach path has not been verified in this repo. If the dev target cannot start or accept a debugger connection under 3.13, it could crash on import or fail to attach, taking down the container.
 
-**Severity:** 🟡 **Medium** — May or may not be an issue depending on debugpy's 3.13 support status.
+**Severity:** 🟡 **Medium** — Unverified runtime path, not a demonstrated failure. The published `debugpy` package metadata lists Python 3.13 support and the CI runs backend tests on Python 3.13, but neither proves the Docker development-stage debugpy startup/attach path works.
 
-**Fix:** Pin to `python:3.12-slim` if debugpy fails, or test with 3.13 first.
+**Fix:** Build and run the `development` target and confirm the debugpy-wrapped uvicorn process starts and accepts a debugger connection. Only pin to `python:3.12-slim` if that specific path demonstrably fails; otherwise close this item as verified.
 
 ---
 
@@ -55,7 +57,7 @@ These issues were identified and resolved in previous sessions. They remain docu
 
 ### #3 — Mock Data Year Mismatch
 
-**Solution:** Dashboard period label is now derived dynamically from actual data via `computePeriodLabel(movements)` in `financial-utils.ts`. The `DashboardHeader` receives the computed label instead of a hardcoded value.
+**Solution:** Both halves of the year/label derivation are now dynamic: the backend derives each month's year from `date.today()` via `_year_for_month` (`backend/app/routes.py`), and the frontend computes the period label from actual data via `computePeriodLabel(movements)` (`frontend/src/lib/financial-utils.ts`). The `DashboardHeader` receives the computed label instead of a hardcoded value.
 
 ### #4 — `depends_on` Without Health Check — Race Condition
 
@@ -85,11 +87,11 @@ These issues were identified and resolved in previous sessions. They remain docu
 |---|-------|------|----------|--------|
 | 1 | `--reload` + bind mount → restart loop | `backend/Dockerfile` | 🔴 Critical | ✅ **FIXED** |
 | 2 | Vite proxy target `backend:8000` won't resolve locally | `frontend/vite.config.ts` | 🔴 Critical | ✅ **FIXED** |
-| 3 | Mock data year mismatch (2025/2026 vs hardcoded "2024") | `backend/app/routes.py` | 🟠 High | ✅ **FIXED** |
+| 3 | Mock data year mismatch (2025/2026 vs hardcoded "2024") | `backend/app/routes.py`, `frontend/src/lib/financial-utils.ts` | 🟠 High | ✅ **FIXED** |
 | 4 | No healthcheck → startup race condition | `docker-compose.yml` | 🟡 Medium | ✅ **FIXED** |
 | 5 | `debugpy` + Python 3.13 compatibility | `backend/Dockerfile` | 🟡 Medium | ❓ Unverified |
 | 6 | Missing favicon → 404 | `frontend/public/` | 🟡 Medium | ✅ **FIXED** |
 | 7 | Generic HTML title | `frontend/index.html` | 🟢 Low | ✅ **FIXED** |
 | 8 | Dead code: `mock-data.ts` unused | `frontend/src/lib/mock-data.ts` | 🟢 Low | ✅ **FIXED** |
-| 9 | Error message in Spanish (mixed language) | `frontend/src/App.tsx` | 🟢 Low | ✅ **FIXED** |
+| 9 | Error message in Spanish (mixed language) | `frontend/src/hooks/use-financial-data.ts` | 🟢 Low | ✅ **FIXED** |
 | 10 | Inter-container networking broken (frontend ↔ backend) | Docker bridge / host | 🔴 Critical | 🔶 **PAUSED/UNRESOLVED** |

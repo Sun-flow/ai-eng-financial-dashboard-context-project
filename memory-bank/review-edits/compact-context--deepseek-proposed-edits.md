@@ -1,4 +1,7 @@
 # Review: `memory-bank/compact-context.md`
+
+> **Archival note**: This is a snapshot of the review as-of October 9, 2026. References to `docs/HANDOFF.md` describe pre-cleanup state; that file was consolidated into `memory-bank/` (commit `f0d3b60`). Treat path claims here as historical, not current.
+
 **Verdict: PASS** ✅ — All claims verified, well-trimmed.
 
 ## Findings (from deepseek review)

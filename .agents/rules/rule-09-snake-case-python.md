@@ -16,5 +16,5 @@ snake_case is the PEP 8 standard for Python. The current codebase already follow
 - Classes and types (Pydantic models, etc.) use PascalCase: `FinancialMovement`, `MetricsSummaryItem`.
 
 ## Supporting References
-- `docs/project-map.md` – Backend Details: function names `generate_mock_movements`, `filter_movements`, `summarize_movements`
-- `docs/conventions.md` – §2.1: snake_case for Python evidence
+- `backend/app/routes.py` – snake_case function names `generate_mock_movements`, `filter_movements`, `summarize_movements`
+- `backend/app/routes.py` – snake_case route parameter names (e.g. `start_date`, `end_date`, `month`), PascalCase Pydantic model `FinancialMovement`/`MetricsSummaryItem`

@@ -17,6 +17,6 @@ Utility functions (transformations, formatters, validators) are the easiest and 
 - Run tests with `npx vitest run` before committing.
 
 ## Supporting References
-- `frontend/src/lib/financial-utils.test.ts` – 9 test cases across 4 describe blocks
-- `docs/health-assessment.md` – Test Status table: frontend utility and component test counts
-- `docs/conventions.md` – §3.2: Vitest + describe/it block convention
+- `frontend/src/lib/financial-utils.test.ts` – 9 test cases across 4 `describe` blocks (`computeKPIs`, `computeMonthlyData`, `formatters`, `computePeriodLabel`)
+- `frontend/src/lib/utils.test.ts` – additional utility tests for the `cn` helper
+- `frontend/src/components/dashboard/kpi-row.test.tsx` – component render tests using the same Vitest `describe`/`it` convention

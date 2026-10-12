@@ -16,6 +16,5 @@ Unpinned dependencies (`fastapi`, `uvicorn[standard]`, `pydantic`, etc.) produce
 - Document the update policy (e.g. "monthly dependency bump" or "Dependabot/Renovate").
 
 ## Supporting References
-- `backend/requirements.txt` – all 3 packages pinned to exact versions
+- `backend/requirements.txt` – all 3 packages pinned to exact versions (`fastapi==0.141.1`, `uvicorn[standard]==0.53.0`, `pydantic==2.13.5`)
 - `backend/requirements.lock` – full transitive dependency lockfile present
-- `docs/health-assessment.md` – Backend Dependencies: pinned versions confirmed

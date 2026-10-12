@@ -10,7 +10,7 @@
 
 ## Known Gaps
 
-- **🔴 Docker bridge networking (#10, paused)**: inter-container traffic times out. Workaround: run both services locally. See `docs/operational-blockers.md`.
+- **🔴 Docker bridge networking (#10, paused)**: inter-container traffic times out. Workaround: run both services locally. See `memory-bank/operational-blockers.md`.
 - **🟢 All 23 rules compliant** (see `agent-rule-compliance-assessment.md`): R1 (stale deps removed), R8 (chart colors green/red), R13 (deviation documented), R16 (utils.test.ts created), R17 (KPIRow/Card/Skeleton tested), R19 (hero.png removed).
 - **🟡 Product scope**: no database, auth, writes, or real-data integration — mock-only read dashboard.
 

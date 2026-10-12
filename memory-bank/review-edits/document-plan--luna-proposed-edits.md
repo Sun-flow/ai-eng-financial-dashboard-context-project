@@ -1,5 +1,7 @@
 ﻿# Review: `memory-bank/document-plan.md`
 
+> **Archival note**: This is a snapshot of the review as-of the docs-consolidation era (early October 2026). The `docs/` paths it references (`docs/HANDOFF.md`, `docs/CHANGELOG.md`, `docs/operational-blockers.md`, `docs/planning.md`) were subsequently consolidated into `memory-bank/` (commit `f0d3b60`). Treat path claims here as historical, not current.
+
 ## Verdict: FAIL — edits recommended
 
 The required memory-bank and related repository paths exist, and the coverage/maintenance sections are mostly accurate. The main defect is in Historical Context: it treats an outstanding rule deviation as resolved and mixes sourced fixes with unsupported claims.

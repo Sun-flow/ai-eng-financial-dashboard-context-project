@@ -8,7 +8,7 @@
 - UI: KPI cards, monthly income-vs-outcome chart, monthly profit-margin chart.
 - No auth, persistence, database, writes, or production data integration.
 - 9 API routes: `/health`, `/api/metrics`, `/api/metrics/{facets,summary,categories/top,comparison,alerts,b2b,b2c}`.
-- Compose services start individually, but host bridge networking blocks inter-service traffic; local development is the workaround.
+- Compose services start individually, but host bridge networking blocks inter-service traffic; local development is the workaround. (See `memory-bank/operational-blockers.md`, Issue #10, PAUSED.)
 
 ## Architecture and Data Flow
 

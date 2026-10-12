@@ -16,4 +16,6 @@ Consistent naming makes the codebase navigable by convention: developers can pre
 - Python files on the backend: already use snake_case naturally; maintain that.
 
 ## Supporting References
-- `docs/conventions.md` – §2.1: File & folder naming table with all evidence
+- `frontend/src/lib/financial-types.ts` – kebab-case file exporting PascalCase interfaces (`FinancialMovement`, `MetricsSummaryItem`)
+- `frontend/src/components/dashboard/` – kebab-case component files (`kpi-card.tsx`, `dashboard-header.tsx`, `profit-percent-chart.tsx`)
+- `backend/app/routes.py` – snake_case Python functions (`generate_mock_movements`, `summarize_movements`)

@@ -1,7 +1,7 @@
 # Compact Context - Financial Dashboard
 
 > **Updated**: October 9, 2026
-> **Details**: `docs/operational-blockers.md`, `memory-bank/current-status.md`.
+> **Details**: `memory-bank/operational-blockers.md`, `memory-bank/current-status.md`.
 
 ## State
 

@@ -18,6 +18,6 @@ Presentational components are deterministic — given props X, they render outpu
 - Place test files next to the component: `kpi-card.test.tsx` alongside `kpi-card.tsx`.
 
 ## Supporting References
-- `docs/conventions.md` – §4.1: `kpi-card.tsx` renders `<Skeleton>` when `loading` is true
-- `docs/health-assessment.md` – Test Status table: component render test coverage (15 tests across 5 components)
-- `frontend/src/components/dashboard/kpi-row.tsx` – presentational component still without a render test
+- `frontend/src/components/dashboard/kpi-card.test.tsx` – renders `<Skeleton>` placeholders when `loading` is true
+- `frontend/src/components/dashboard/kpi-row.test.tsx` – render tests across 5 `it` blocks (all four KPI cards, formatted values, placeholder dashes, skeleton indicators, grid container)
+- `frontend/src/components/dashboard/kpi-row.tsx` – presentational component

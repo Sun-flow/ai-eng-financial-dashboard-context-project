@@ -18,5 +18,4 @@ Backend routes must be tested via `TestClient` from `fastapi.testclient` with is
 
 ## Supporting References
 - `backend/tests/conftest.py` – `client` pytest fixture returning a fresh `TestClient(app)` per test
-- `docs/health-assessment.md` – Python Imports — tests: `TestClient` imported and used in 15 tests
-- `docs/project-map.md` – Backend Tests: coverage includes health, filters, date ranges, B2B/B2C
+- `backend/tests/test_routes.py` – `TestClient` imported and used across 15 test functions covering health, filter combinations, date ranges, and B2B/B2C filtering

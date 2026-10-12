@@ -16,7 +16,7 @@ Users should never see a blank screen, infinite spinner, or crash. Four states c
 - Empty states should explain *why* there's no data when possible.
 
 ## Supporting References
-- `docs/conventions.md` – §4.1: Skeleton loading in `kpi-card.tsx`
-- `docs/conventions.md` – §4.2: Error banner in `App.tsx` (rendered via `useFinancialData`'s `error` state)
-- `docs/conventions.md` – §4.3: "No data available to display" fallback in chart components
+- `frontend/src/components/dashboard/kpi-card.tsx` – renders `Skeleton` placeholders when `loading`; verified by `kpi-card.test.tsx`
+- `frontend/src/hooks/use-financial-data.ts` – error state set via `setError("…")` on fetch failure (`App.tsx` renders the message)
+- `frontend/src/components/dashboard/income-outcome-chart.tsx` & `profit-percent-chart.tsx` – "No data available to display" fallback in chart components
 - `frontend/src/components/error-boundary.tsx` – `ErrorBoundary` class component wraps `<Dashboard />` in `App.tsx`, with a dedicated test suite (`error-boundary.test.tsx`)

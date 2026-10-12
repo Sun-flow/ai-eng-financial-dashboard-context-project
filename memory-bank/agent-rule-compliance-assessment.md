@@ -24,7 +24,7 @@
 | R10 APIRouter pattern | Compliant | Routes register on `APIRouter` and are included by the FastAPI app. |
 | R11 Seeded/cached mock data | Compliant | Mock generation is seeded, `@lru_cache`-backed, and accepts an explicit date. |
 | R12 Docker healthchecks | Compliant | Backend healthcheck and `service_healthy` dependency are configured. |
-| R13 Dev/prod image separation | Compliant | Multi-stage Dockerfile with `development` (debugpy, no reload per docs/operational-blockers.md Issue #1) and `production` (plain uvicorn) targets. Deviation is documented and intentional. |
+| R13 Dev/prod image separation | Compliant | Multi-stage Dockerfile with `development` (debugpy, no reload per memory-bank/operational-blockers.md Issue #1) and `production` (plain uvicorn) targets. Deviation is documented and intentional. |
 | R14 Pinned Python dependencies | Compliant | Direct pins plus `backend/requirements.lock`; CI installs the lockfile. |
 | R15 Backend TestClient usage | Compliant | Shared `TestClient` fixture lives in `backend/tests/conftest.py`. |
 | R16 Frontend utility tests | Compliant | `financial-utils.ts` and `utils.ts` (`cn`) both have dedicated Vitest tests. |
@@ -60,7 +60,7 @@ CI enforces dependency integrity ✅, tests ✅ (backend + frontend), lint ✅, 
 
 ## Known Non-Rule Blocker
 
-Docker networking is paused; details: `docs/CHANGELOG.md`, `docs/operational-blockers.md`. Containers are individually healthy; host/DinD bridge blocks routing. Environmental, not a rule failure.
+Docker networking is paused; details: `memory-bank/operational-blockers.md`. Containers are individually healthy; host/DinD bridge blocks routing. Environmental, not a rule failure.
 
 ## Validation
 

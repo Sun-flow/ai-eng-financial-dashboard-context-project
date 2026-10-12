@@ -1,5 +1,7 @@
 # Cross-File Consistency Audit — Memory Bank
 
+> **Archival note**: This audit is a point-in-time snapshot (early October 2026, pre-`f0d3b60` cleanup). Its references to `docs/HANDOFF.md` describe files that were subsequently consolidated into `memory-bank/`. Findings remain valid history; path claims are historical, not current.
+
 ## Inconsistencies Found
 
 ### 🔴 I1: `document-plan.md` misclassifies R13 as resolved

@@ -16,4 +16,5 @@ Using `APIRouter` keeps route definitions modular and testable — routes can be
 - Use optional `prefix=` and `tags=` parameters on `APIRouter()` for route organization and OpenAPI grouping.
 
 ## Supporting References
-- `docs/conventions.md` – §1.2: `routes.py` uses `APIRouter()`, `main.py` uses `app.include_router()`
+- `backend/app/routes.py` – `router = APIRouter()` with `@router.get(...)` handlers registered
+- `backend/app/main.py` – `app.include_router(router)` mounts the router on the app

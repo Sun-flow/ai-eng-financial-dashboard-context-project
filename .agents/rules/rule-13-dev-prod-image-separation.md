@@ -18,4 +18,4 @@ Development and production have fundamentally conflicting needs: dev prioritizes
 ## Supporting References
 - `backend/Dockerfile` – multi-stage `base` → `development` (debugpy, no `--reload`) → `production` (plain `uvicorn`, no debugger)
 - `frontend/Dockerfile` – multi-stage `base` → `development` (`npm run dev`) → `build` → `production` (`nginx:alpine` serving the built assets)
-- `docs/operational-blockers.md` – Issue #1: historical `--reload` + bind mount infinite restart loop, since fixed by omitting `--reload` from the development stage
+- `memory-bank/operational-blockers.md` – Issue #1: historical `--reload` + bind mount infinite restart loop, since fixed by omitting `--reload` from the development stage

@@ -16,5 +16,5 @@ Docker Compose services that depend on other services must use healthchecks, not
 - Any new service that depends on another must follow this pattern.
 
 ## Supporting References
-- `docs/operational-blockers.md` – Issue #4: healthcheck + `condition: service_healthy` now implemented and marked ✅ FIXED
+- `memory-bank/operational-blockers.md` – Issue #4: healthcheck + `condition: service_healthy` now implemented and marked ✅ FIXED
 - `docker-compose.yml` – backend `healthcheck` block and frontend `depends_on.backend.condition: service_healthy`
